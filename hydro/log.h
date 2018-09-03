@@ -4,6 +4,7 @@
 #include <ctime>
 #include <sstream>
 #include <string>
+#include <memory>
 #include <mutex>
 
 #define DEBUG_ON 0

@@ -6,26 +6,26 @@
 class State
 {
 public:
-	enum Property
-	{
-		LightOn = 0,
-		ReservoirFlooded,
-	    NumProperties
-	};
+    enum Property
+    {
+        LightOn = 0,
+        ReservoirFlooded,
+        NumProperties
+    };
 
 public:
-	State();
+    State();
 
-	void setProperty(Property prop, bool value);
+    void setProperty(Property prop, bool value);
 
-	State& operator=(State& other);
-	bool operator==(const State& other) const;
-	bool operator!=(const State& other) const;
+    State& operator=(State& other);
+    bool operator==(const State& other) const;
+    bool operator!=(const State& other) const;
 
-	void getDelta(const State& next, std::map<Property, bool>& delta) const;
+    void getDelta(const State& next, std::map<Property, bool>& delta) const;
 
 private:
-	bool _properties[Property::NumProperties];
+    bool _properties[Property::NumProperties];
 };
 
 #endif

@@ -28,13 +28,13 @@ private:
 class SetPropertyCommand : public Command
 {
 public:
-	SetPropertyCommand(State::Property property, bool value);
+    SetPropertyCommand(State::Property property, bool value);
 
-	virtual void execute();
+    virtual void execute();
 
 private:
-	State::Property _property;
-	bool _value;
+    State::Property _property;
+    bool _value;
 };
 
 class SampleDataCommand : public Command

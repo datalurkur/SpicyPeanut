@@ -13,67 +13,67 @@ class CommandQueue;
 class Event
 {
 public:
-	enum Type
-	{
-		ChangeState = 0,
-		SampleData
-	};
+    enum Type
+    {
+        ChangeState = 0,
+        SampleData
+    };
 
 public:
-	Event(Type type, long long timeInMinutes);
+    Event(Type type, long long timeInMinutes);
 
-	long long getTime() const;
-	Type getType() const;
+    long long getTime() const;
+    Type getType() const;
 
 private:
-	Type _type;
-	long long _time;
+    Type _type;
+    long long _time;
 };
 
 class ChangeStateEvent : public Event
 {
 public:
-	ChangeStateEvent(long long timeInMinutes, State::Property property, bool value);
+    ChangeStateEvent(long long timeInMinutes, State::Property property, bool value);
 
-	State::Property getProperty() const;
-	bool getValue() const;
+    State::Property getProperty() const;
+    bool getValue() const;
 
 private:
-	State::Property _property;
-	bool _value;
+    State::Property _property;
+    bool _value;
 };
 
 class SampleDataEvent : public Event
 {
 public:
-	SampleDataEvent(long long timeInMinutes);
+    SampleDataEvent(long long timeInMinutes);
 };
 
 class Schedule
 {
 public:
-	Schedule();
-	virtual ~Schedule();
+    Schedule();
+    virtual ~Schedule();
 
-	void addEvent(std::shared_ptr<Event> event);
+    void addEvent(std::shared_ptr<Event> event);
 
-	void start(std::shared_ptr<CommandQueue> commandQueue);
-	void stop();
-
-private:
-	void processEvents(std::shared_ptr<CommandQueue> commandQueue);
+    void start(std::shared_ptr<CommandQueue> commandQueue);
+    void stop();
 
 private:
-	State _state;
+    void processEvents(std::shared_ptr<CommandQueue> commandQueue);
 
-	std::list<std::shared_ptr<Event>> _events;
+private:
+    State _state;
 
-	std::chrono::system_clock::time_point _reference;
+    std::list<std::shared_ptr<Event>> _events;
 
-	int _eventIndex;
-	std::mutex _mutex;
-	std::shared_ptr<std::thread> _thread;
-	std::shared_ptr<CancellableWait> _awaiter;
+    std::chrono::system_clock::time_point _reference;
+
+    int _eventIndex;
+    std::mutex _mutex;
+    std::shared_ptr<std::thread> _thread;
+    std::shared_ptr<CancellableWait> _awaiter;
 };
 
 #endif
