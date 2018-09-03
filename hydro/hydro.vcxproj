@@ -162,9 +162,8 @@
     <ClInclude Include="command.h" />
     <ClInclude Include="commandqueue.h" />
     <ClInclude Include="log.h" />
-    <ClInclude Include="Parameters.h" />
-    <ClInclude Include="plan.h" />
     <ClInclude Include="schedule.h" />
+    <ClInclude Include="state.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="util.h" />
   </ItemGroup>
@@ -173,8 +172,8 @@
     <ClCompile Include="commandqueue.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="log.cpp" />
-    <ClCompile Include="plan.cpp" />
     <ClCompile Include="schedule.cpp" />
+    <ClCompile Include="state.cpp" />
     <ClCompile Include="util.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -31,7 +31,10 @@ std::shared_ptr<Command> CommandQueue::dequeueCommand()
 
 bool CommandQueue::waitForNextCommand()
 {
-    _awaiter->reset();
+	{
+		std::lock_guard<std::mutex> lock(_mutex);
+		_awaiter = std::make_shared<WaitForCompletion>();
+	}
     return _awaiter->wait();
 }
 

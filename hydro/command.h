@@ -1,6 +1,8 @@
 #ifndef _COMMAND_H_
 #define _COMMAND_H_
 
+#include "state.h"
+
 #include <list>
 #include <memory>
 
@@ -23,16 +25,16 @@ private:
     std::list<std::shared_ptr<Command>> _subCommands;
 };
 
-class FloodCommand : public Command
+class SetPropertyCommand : public Command
 {
 public:
-    virtual void execute();
-};
+	SetPropertyCommand(State::Property property, bool value);
 
-class DrainCommand : public Command
-{
-public:
-    virtual void execute();
+	virtual void execute();
+
+private:
+	State::Property _property;
+	bool _value;
 };
 
 class SamplePHCommand : public Command

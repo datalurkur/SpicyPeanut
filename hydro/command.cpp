@@ -17,14 +17,12 @@ void CompositeCommand::execute()
     }
 }
 
-void FloodCommand::execute()
-{
-    LogInfo("Flooding root system");
-}
+SetPropertyCommand::SetPropertyCommand(State::Property property, bool value): _property(property), _value(value)
+{ }
 
-void DrainCommand::execute()
+void SetPropertyCommand::execute()
 {
-    LogInfo("Draining root system");
+	LogInfo("Setting property " << _property << " to " << _value);
 }
 
 void SamplePHCommand::execute()

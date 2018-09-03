@@ -13,10 +13,6 @@ public:
     CancellableWait& operator=(const CancellableWait&) = delete;
 
     void cancel();
-
-    virtual std::shared_ptr<CancellableWait> next();
-    virtual void reset();
-
     virtual bool wait() = 0;
 
 protected:
@@ -32,8 +28,6 @@ public:
     WaitForCompletion();
 
     void complete();
-
-    virtual void reset();
     virtual bool wait();
 
 private:
@@ -43,17 +37,10 @@ private:
 class WaitForTime : public CancellableWait
 {
 public:
-    WaitForTime(long long durationInSeconds, long long delayInSeconds);
-    WaitForTime(long long durationInSeconds, long long delayInSeconds, std::chrono::system_clock::time_point targetTime);
-
-    virtual std::shared_ptr<CancellableWait> next();
-    virtual void reset();
+    WaitForTime(std::chrono::system_clock::time_point targetTime);
     virtual bool wait();
 
 private:
-    long long _delayInSeconds;
-    long long _durationInSeconds;
-
     std::chrono::system_clock::time_point _targetTime;
 };
 
