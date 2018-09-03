@@ -39,17 +39,8 @@ void Schedule::start(std::shared_ptr<CommandQueue> commandQueue)
 
 	LogInfo("Starting schedule");
 	std::lock_guard<std::mutex> lock(_mutex);
-
-	std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
-	time_t tNow = std::chrono::system_clock::to_time_t(now);
-	tm* tpNow = std::localtime(&tNow);
-	tpNow->tm_hour = 0;
-	tpNow->tm_min = 0;
-	tpNow->tm_sec = 0;
-	_reference = std::chrono::system_clock::from_time_t(std::mktime(tpNow));
-
+    _reference = TimeUtil::GetLastMidnight();
 	_events.sort([](std::shared_ptr<Event> a, std::shared_ptr<Event> b) -> bool { return a->getTime() < b->getTime(); });
-
 	_thread = std::make_shared<std::thread>(&Schedule::processEvents, this, commandQueue);
 }
 
@@ -70,7 +61,7 @@ void Schedule::processEvents(std::shared_ptr<CommandQueue> commandQueue)
 			std::lock_guard<std::mutex> lock(_mutex);
 
 			// Compute minutes since midnight
-			std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+            std::chrono::system_clock::time_point now = GetCurrentTime();
 			std::chrono::minutes msm = std::chrono::duration_cast<std::chrono::minutes>(now - _reference);
 			long long minutesSinceMidnight = msm.count();
 			LogInfo("It has been " << minutesSinceMidnight << " minutes since midnight");
@@ -124,8 +115,8 @@ void Schedule::processEvents(std::shared_ptr<CommandQueue> commandQueue)
 			// Sample data
 			if (sampleData)
 			{
-				LogInfo("Sampling data");
-				// FIXME
+				LogInfo("Queueing sample data");
+                commandQueue->queueCommand(std::make_shared<SamplePHCommand>());
 			}
 
 			// Build awaiter for next event
@@ -135,6 +126,7 @@ void Schedule::processEvents(std::shared_ptr<CommandQueue> commandQueue)
 				std::chrono::system_clock::time_point nextMidnight = _reference + std::chrono::hours(24);
 				_awaiter = std::make_shared<WaitForTime>(nextMidnight);
 				_reference = nextMidnight;
+                _eventIndex = 0;
 			}
 			else
 			{
