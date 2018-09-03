@@ -37,7 +37,7 @@ private:
 	bool _value;
 };
 
-class SamplePHCommand : public Command
+class SampleDataCommand : public Command
 {
 public:
     virtual void execute();

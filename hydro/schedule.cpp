@@ -116,7 +116,7 @@ void Schedule::processEvents(std::shared_ptr<CommandQueue> commandQueue)
 			if (sampleData)
 			{
 				LogInfo("Queueing sample data");
-                commandQueue->queueCommand(std::make_shared<SamplePHCommand>());
+                commandQueue->queueCommand(std::make_shared<SampleDataCommand>());
 			}
 
 			// Build awaiter for next event
