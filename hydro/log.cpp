@@ -38,11 +38,10 @@ void Log::log(const std::string& data)
     std::lock_guard<std::mutex> lock(_mutex);
     if (_writeToStdOut)
     {
-        std::cout << data;
+        std::cout << data << std::flush;
     }
     if (_fileStream.is_open())
     {
-        _fileStream << data;
-        _fileStream.flush();
+        _fileStream << data << std::flush;
     }
 }

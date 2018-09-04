@@ -1,14 +1,4 @@
-﻿#if DAEMON == 1
-#include <fcntl.h>
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
-#endif
-
-#include <memory>
+﻿#include <memory>
 
 #include "command.h"
 #include "commandqueue.h"
@@ -32,31 +22,7 @@ void signalHandler(int sig)
 
 int main()
 {
-#if DAEMON == 1
-    pid_t pid = fork();
-
-    if (pid < 0) { exit(EXIT_FAILURE); }
-    if (pid > 0) { exit(EXIT_SUCCESS); }
-
-    umask(0);
-
-    pid_t sid = setsid();
-    if (sid < 0) { exit(EXIT_FAILURE); }
-
-    chdir("/");
-
-    fclose(stdin);
-    fclose(stdout);
-    fclose(stderr);
-
-    signal(SIGTERM, signalHander);
-    signal(SIGHUP, SIG_IGN);
-    signal(SIGCHLD, SIG_IGN);
-
-    Log::Init(false, "spicyd.log");
-#else
     Log::Init(true, "");
-#endif
 
     UCInterface::Init();
 

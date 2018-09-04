@@ -46,8 +46,11 @@ bool UCInterface::sampleDHT22()
     }
 
 #if !_WINDOWS_BUILD
-    delay(msToWait);
-    
+    if (msToWait > 0)
+    {
+        delay(msToWait);
+    }
+
     uint8_t laststate = HIGH;
     uint8_t counter = 0;
     uint8_t j = 0;
