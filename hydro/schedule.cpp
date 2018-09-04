@@ -84,13 +84,13 @@ void Schedule::processEvents(std::shared_ptr<CommandQueue> commandQueue)
                 {
                     std::shared_ptr<ChangeStateEvent> cse = std::static_pointer_cast<ChangeStateEvent>(*itr);
                     newState.setProperty(cse->getProperty(), cse->getValue());
-                    LogInfo("Setting property " << cse->getProperty() << " to " << cse->getValue() << " at past time " << cse->getTime());
+                    LogDebug("Setting property " << cse->getProperty() << " to " << cse->getValue() << " at past time " << cse->getTime());
                     break;
                 }
                 case Event::Type::SampleData:
                 {
                     std::shared_ptr<SampleDataEvent> sde = std::static_pointer_cast<SampleDataEvent>(*itr);
-                    LogInfo("Marking sample data at past time " << sde->getTime());
+                    LogDebug("Marking sample data at past time " << sde->getTime());
                     sampleData = true;
                     break;
                 }
@@ -108,14 +108,15 @@ void Schedule::processEvents(std::shared_ptr<CommandQueue> commandQueue)
             _state.getDelta(newState, updates);
             for (std::pair<State::Property, bool> kvp : updates)
             {
-                LogInfo("Queueing setprop command to key " << kvp.first << " to " << kvp.second);
+                LogDebug("Queueing setprop command to key " << kvp.first << " to " << kvp.second);
                 commandQueue->queueCommand(std::make_shared<SetPropertyCommand>(kvp.first, kvp.second));
             }
+            _state = newState;
 
             // Sample data
             if (sampleData)
             {
-                LogInfo("Queueing sample data");
+                LogDebug("Queueing sample data");
                 commandQueue->queueCommand(std::make_shared<SampleDataCommand>());
             }
 

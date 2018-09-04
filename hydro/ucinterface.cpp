@@ -42,7 +42,7 @@ bool UCInterface::sampleDHT22()
     long long msToWait = std::max(0LL, std::chrono::duration_cast<std::chrono::milliseconds>(_nextDHT22Sample - now).count());
     if (msToWait > 0)
     {
-        LogInfo("Waiting " << msToWait << "ms to sample DHT22");
+        LogDebug("Waiting " << msToWait << "ms to sample DHT22");
     }
 
 #if !_WINDOWS_BUILD
@@ -107,7 +107,7 @@ bool UCInterface::sampleDHT22()
     }
     else
     {
-        LogInfo("Failed to sample DHT22, bad data");
+        LogDebug("Failed to sample DHT22, bad data");
     }
 #endif
 
@@ -135,10 +135,12 @@ void UCInterface::setReservoirState(bool flooded)
 bool UCInterface::getReservoirState()
 {
     bool ret = false;
-#if !_WINDOWS_BUILD
+#if _WINDOWS_BUILD
+    ret = true;
+#else
     ret = (digitalRead(PIN_RESERVOIR_RELAY) == HIGH);
-    LogInfo("Current reservoir state is " << (ret ? "flooded" : "drained"));
 #endif
+    LogInfo("Current reservoir state is " << (ret ? "flooded" : "drained"));
     return ret;
 }
 
@@ -152,10 +154,12 @@ void UCInterface::setLightState(bool on)
 bool UCInterface::getLightState()
 {
     bool ret = false;
-#if !_WINDOWS_BUILD
+#if _WINDOWS_BUILD
+    ret = true;
+#else
     ret = (digitalRead(PIN_LIGHT_RELAY) == HIGH);
-    LogInfo("Current light state is " << (ret ? "on" : "off"));
 #endif
+    LogInfo("Current light state is " << (ret ? "on" : "off"));
     return ret;
 }
 
