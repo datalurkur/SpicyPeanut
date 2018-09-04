@@ -1,4 +1,14 @@
-﻿#include <memory>
+﻿#if DAEMON == 1
+#include <fcntl.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+#endif
+
+#include <memory>
 
 #include "command.h"
 #include "commandqueue.h"
@@ -6,11 +16,48 @@
 #include "schedule.h"
 #include "ucinterface.h"
 
-std::shared_ptr<CommandQueue> commandQueue;
+/*
+TODO:
+- Read initial state of pins
+- Add i2c code
+*/
+
+static std::shared_ptr<CommandQueue> commandQueue = nullptr;
+
+void signalHandler(int sig)
+{
+    LogInfo("Halting command queue");
+    commandQueue->interrupt();
+}
 
 int main()
 {
-    Log::Init("");
+#if DAEMON == 1
+    pid_t pid = fork();
+
+    if (pid < 0) { exit(EXIT_FAILURE); }
+    if (pid > 0) { exit(EXIT_SUCCESS); }
+
+    umask(0);
+
+    pid_t sid = setsid();
+    if (sid < 0) { exit(EXIT_FAILURE); }
+
+    chdir("/");
+
+    fclose(stdin);
+    fclose(stdout);
+    fclose(stderr);
+
+    signal(SIGTERM, signalHander);
+    signal(SIGHUP, SIG_IGN);
+    signal(SIGCHLD, SIG_IGN);
+
+    Log::Init(false, "spicyd.log");
+#else
+    Log::Init(true, "");
+#endif
+
     UCInterface::Init();
 
     std::shared_ptr<Schedule> schedule = std::make_shared<Schedule>();
@@ -62,16 +109,15 @@ int main()
     commandQueue = std::make_shared<CommandQueue>();
     schedule->start(commandQueue);
 
-    // TODO - Make this a thread
-    while (true)
+    bool commandReady = false;
+    while (commandReady = commandQueue->waitForNextCommand())
     {
-        bool commandReady = commandQueue->waitForNextCommand();
-        if (!commandReady) { continue; }
-        do
+        std::shared_ptr<Command> cmd = nullptr;
+        while (cmd = commandQueue->dequeueCommand())
         {
-            std::shared_ptr<Command> cmd = commandQueue->dequeueCommand();
-            if (cmd == nullptr) { break; }
             cmd->execute();
-        } while (true);
+        }
     }
+
+    return EXIT_SUCCESS;
 }

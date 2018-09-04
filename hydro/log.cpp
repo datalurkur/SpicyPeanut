@@ -4,9 +4,9 @@
 
 std::shared_ptr<Log> Log::Instance = nullptr;
 
-void Log::Init(const std::string& logPath)
+void Log::Init(bool writeToStdOut, const std::string& logPath)
 {
-    Log::Instance = std::make_shared<Log>(logPath);
+    Log::Instance = std::make_shared<Log>(writeToStdOut, logPath);
 }
 
 std::string Log::GetReadableTime(const std::chrono::system_clock::time_point& timePoint)
@@ -17,18 +17,32 @@ std::string Log::GetReadableTime(const std::chrono::system_clock::time_point& ti
     return str;
 }
 
-Log::Log(const std::string& logPath)
+Log::Log(bool writeToStdOut, const std::string& logPath): _writeToStdOut(writeToStdOut)
 {
-
+    if (logPath.length() > 0)
+    {
+        _fileStream.open(logPath.c_str(), std::fstream::out);
+    }
 }
 
 Log::~Log()
 {
-
+    if (_fileStream.is_open())
+    {
+        _fileStream.close();
+    }
 }
 
 void Log::log(const std::string& data)
 {
     std::lock_guard<std::mutex> lock(_mutex);
-    std::cout << data;
+    if (_writeToStdOut)
+    {
+        std::cout << data;
+    }
+    if (_fileStream.is_open())
+    {
+        _fileStream << data;
+        _fileStream.flush();
+    }
 }

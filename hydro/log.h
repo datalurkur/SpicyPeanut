@@ -3,6 +3,7 @@
 
 #include <ctime>
 #include <sstream>
+#include <fstream>
 #include <string>
 #include <memory>
 #include <mutex>
@@ -14,17 +15,19 @@ class Log
 public:
     static std::shared_ptr<Log> Instance;
 
-    static void Init(const std::string& logPath);
+    static void Init(bool writeToStdOut, const std::string& logPath);
 
     static std::string GetReadableTime(const std::chrono::system_clock::time_point& timePoint);
 
 public:
-    Log(const std::string& logPath);
+    Log(bool writeToStdOut, const std::string& logPath);
     virtual ~Log();
 
     void log(const std::string& data);
 
 private:
+    bool _writeToStdOut;
+    std::ofstream _fileStream;
     std::mutex _mutex;
 };
 
