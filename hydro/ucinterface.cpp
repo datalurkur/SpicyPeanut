@@ -7,6 +7,7 @@
 #include "wiringPi.h"
 #endif
 
+#include <algorithm>
 #include <stdint.h>
 
 std::shared_ptr<UCInterface> UCInterface::Instance = nullptr;
@@ -34,7 +35,19 @@ UCInterface::~UCInterface()
 
 bool UCInterface::sampleDHT22()
 {
+    bool succeeded = false;
+
+    // Wait until 2 seconds have elapsed since the last sample
+    std::chrono::system_clock::time_point now = GetCurrentTime();
+    long long msToWait = std::max(0LL, std::chrono::duration_cast<std::chrono::milliseconds>(_nextDHT22Sample - now).count());
+    if (msToWait > 0)
+    {
+        LogInfo("Waiting " << msToWait << "ms to sample DHT22");
+    }
+
 #if !_WINDOWS_BUILD
+    delay(msToWait);
+    
     uint8_t laststate = HIGH;
     uint8_t counter = 0;
     uint8_t j = 0;
@@ -42,15 +55,6 @@ bool UCInterface::sampleDHT22()
 
     uint8_t data[5];
     for (i = 0; i < 5; ++i) { data[i] = 0; }
-
-    // Wait until 2 seconds have elapsed since the last sample
-    std::chrono::system_clock::time_point now = GetCurrentTime();
-    long long msToWait = (_nextDHT22Sample - now).count();
-    if (msToWait > 0)
-    {
-        LogInfo("Waiting " << msToWait << "ms to sample DHT22");
-        delay(msToWait);
-    }
 
     // Notify DHT22 that we want to read data
     pinMode(PIN_DHT22, OUTPUT);
@@ -84,7 +88,6 @@ bool UCInterface::sampleDHT22()
     }
 
     // Verify number of bits read and checksum
-    bool succeeded = false;
     if ((j >= 40) && (data[4] == ((data[0] + data[1] + data[2] + data[3]) & 0xFF)))
     {
         float h = (float)((data[0] << 8) + data[1]) / 10;
@@ -103,12 +106,10 @@ bool UCInterface::sampleDHT22()
     {
         LogInfo("Failed to sample DHT22, bad data");
     }
+#endif
 
     _nextDHT22Sample = GetCurrentTime() + std::chrono::seconds(2);
     return succeeded;
-#else
-    return false;
-#endif
 }
 
 float UCInterface::getLastTemperature()
