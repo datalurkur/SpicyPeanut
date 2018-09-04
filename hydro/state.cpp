@@ -1,10 +1,22 @@
 #include "state.h"
+#include "ucinterface.h"
 
 State::State()
 {
     for (int i = 0; i < NumProperties; ++i)
     {
-        _properties[i] = false;
+        switch ((Property)i)
+        {
+        case Property::LightOn:
+            _properties[i] = UCInterface::Instance->getLightState();
+            break;
+        case Property::ReservoirFlooded:
+            _properties[i] = UCInterface::Instance->getReservoirState();
+            break;
+        default:
+            _properties[i] = false;
+            break;
+        }
     }
 }
 

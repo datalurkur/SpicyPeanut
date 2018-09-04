@@ -1,6 +1,7 @@
 #ifndef _UCINTERFACE_H_
 #define _UCINTERFACE_H_
 
+#include <chrono>
 #include <memory>
 
 class UCInterface
@@ -19,8 +20,10 @@ public:
     float getLastHumidity();
 
     void setReservoirState(bool flooded);
+    bool getReservoirState();
 
     void setLightState(bool on);
+    bool getLightState();
 
 private:
     std::chrono::system_clock::time_point _nextDHT22Sample;

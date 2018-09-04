@@ -132,9 +132,30 @@ void UCInterface::setReservoirState(bool flooded)
 #endif
 }
 
+bool UCInterface::getReservoirState()
+{
+    bool ret = false;
+#if !_WINDOWS_BUILD
+    ret = (digitalRead(PIN_RESERVOIR_RELAY) == HIGH);
+    LogInfo("Current reservoir state is " << (ret ? "flooded" : "drained"));
+#endif
+    return ret;
+}
+
 void UCInterface::setLightState(bool on)
 {
 #if !_WINDOWS_BUILD
     digitalWrite(PIN_LIGHT_RELAY, on ? HIGH : LOW);
 #endif
 }
+
+bool UCInterface::getLightState()
+{
+    bool ret = false;
+#if !_WINDOWS_BUILD
+    ret = (digitalRead(PIN_LIGHT_RELAY) == HIGH);
+    LogInfo("Current light state is " << (ret ? "on" : "off"));
+#endif
+    return ret;
+}
+
