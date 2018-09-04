@@ -4,7 +4,7 @@
 #include "util.h"
 
 #if !_WINDOWS_BUILD
-#include "wiringpi.h"
+#include "wiringPi.h"
 #endif
 
 #include <stdint.h>
@@ -44,8 +44,13 @@ bool UCInterface::sampleDHT22()
     for (i = 0; i < 5; ++i) { data[i] = 0; }
 
     // Wait until 2 seconds have elapsed since the last sample
-    long long msToWait = (_nextDHT22Sample - GetCurrentTime()).count();
-    delay(msToWait);
+    std::chrono::system_clock::time_point now = GetCurrentTime();
+    long long msToWait = (_nextDHT22Sample - now).count();
+    if (msToWait > 0)
+    {
+        LogInfo("Waiting " << msToWait << "ms to sample DHT22");
+        delay(msToWait);
+    }
 
     // Notify DHT22 that we want to read data
     pinMode(PIN_DHT22, OUTPUT);

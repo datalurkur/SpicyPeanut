@@ -1,6 +1,6 @@
 CXX = g++
-CXXFLAGS = -std=c++11
-LDLIBS = -lwiringPi
+CXXFLAGS = -std=c++11 -I ../wiringPi/wiringPi
+LDLIBS = -lwiringPi -lc -lpthread
 
 HEADERS = command.h commandqueue.h config.h log.h schedule.h state.h ucinterface.h util.h
 OBJECTS = command.o commandqueue.o log.o main.o schedule.o state.o ucinterface.o util.o

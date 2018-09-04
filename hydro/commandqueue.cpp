@@ -40,5 +40,6 @@ bool CommandQueue::waitForNextCommand()
 
 void CommandQueue::interrupt()
 {
+    std::lock_guard<std::mutex> lock(_mutex);
     _awaiter->cancel();
 }

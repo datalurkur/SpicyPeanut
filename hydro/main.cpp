@@ -6,12 +6,12 @@
 #include "schedule.h"
 #include "ucinterface.h"
 
+std::shared_ptr<CommandQueue> commandQueue;
+
 int main()
 {
     Log::Init("");
     UCInterface::Init();
-
-    std::shared_ptr<CommandQueue> commandQueue = std::make_shared<CommandQueue>();
 
     std::shared_ptr<Schedule> schedule = std::make_shared<Schedule>();
 
@@ -59,6 +59,7 @@ int main()
         schedule->addEvent(std::make_shared<SampleDataEvent>(time));
     }
 
+    commandQueue = std::make_shared<CommandQueue>();
     schedule->start(commandQueue);
 
     // TODO - Make this a thread
