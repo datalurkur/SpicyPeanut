@@ -61,7 +61,7 @@ void Schedule::processEvents(std::shared_ptr<CommandQueue> commandQueue)
             std::lock_guard<std::mutex> lock(_mutex);
 
             // Compute minutes since midnight
-            std::chrono::system_clock::time_point now = GetCurrentTime();
+            std::chrono::system_clock::time_point now = SampleCurrentTime();
             std::chrono::minutes msm = std::chrono::duration_cast<std::chrono::minutes>(now - _reference);
             long long minutesSinceMidnight = msm.count();
             LogInfo("It has been " << minutesSinceMidnight << " minutes since midnight");

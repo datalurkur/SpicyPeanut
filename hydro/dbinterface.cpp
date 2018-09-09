@@ -27,15 +27,23 @@ DBInterface::~DBInterface()
 bool DBInterface::connect()
 {
     std::ifstream cStrInput(kConnectionStringPath, std::ios::in);
-    if (!cStrInput.is_open()) { return false; }
+    if (!cStrInput.is_open())
+    {
+        LogError("Failed to open connection string file, no data will be logged");
+        return false;
+    }
 
     std::string connectionString;
     cStrInput.seekg(0, std::ios::end);
-    connectionString.reserve(cStrInput.tellg());
+    connectionString.reserve((int)cStrInput.tellg());
     cStrInput.seekg(0, std::ios::beg);
 
     connectionString.assign((std::istreambuf_iterator<char>(cStrInput)), std::istreambuf_iterator<char>());
-    if (connectionString.length() == 0) { return false; }
+    if (connectionString.length() == 0)
+    {
+        LogError("Failed to read connection string data, no samples will be logged");
+        return false;
+    }
 
     try
     {

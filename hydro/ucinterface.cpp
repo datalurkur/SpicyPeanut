@@ -24,7 +24,7 @@ UCInterface::UCInterface()
     wiringPiSetup();
     pinMode(PIN_LIGHT_RELAY, OUTPUT);
     pinMode(PIN_RESERVOIR_RELAY, OUTPUT);
-    _nextDHT22Sample = GetCurrentTime();
+    _nextDHT22Sample = SampleCurrentTime();
 #endif
 }
 
@@ -38,7 +38,7 @@ bool UCInterface::sampleDHT22()
     bool succeeded = false;
 
     // Wait until 2 seconds have elapsed since the last sample
-    std::chrono::system_clock::time_point now = GetCurrentTime();
+    std::chrono::system_clock::time_point now = SampleCurrentTime();
     long long msToWait = std::max(0LL, std::chrono::duration_cast<std::chrono::milliseconds>(_nextDHT22Sample - now).count());
     if (msToWait > 0)
     {
@@ -111,7 +111,7 @@ bool UCInterface::sampleDHT22()
     }
 #endif
 
-    _nextDHT22Sample = GetCurrentTime() + std::chrono::seconds(2);
+    _nextDHT22Sample = SampleCurrentTime() + std::chrono::seconds(2);
     return succeeded;
 }
 

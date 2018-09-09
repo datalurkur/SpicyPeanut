@@ -40,9 +40,9 @@ private:
 };
 
 #if QUICKTIME_DEBUG == 1
-#define GetCurrentTime FakeTime::GetInstance()->getCurrentTime
+#define SampleCurrentTime FakeTime::GetInstance()->getCurrentTime
 #else
-#define GetCurrentTime std::chrono::system_clock::now
+#define SampleCurrentTime std::chrono::system_clock::now
 #endif
 
 class CancellableWait

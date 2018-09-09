@@ -90,11 +90,11 @@ WaitForTime::WaitForTime(std::chrono::system_clock::time_point targetTime):
 bool WaitForTime::wait()
 {
 #if QUICKTIME_DEBUG == 1
-    std::chrono::system_clock::time_point now = GetCurrentTime();
+    std::chrono::system_clock::time_point now = SampleCurrentTime();
     while (now < _targetTime)
     {
         std::this_thread::sleep_for(std::chrono::seconds(1));
-        now = GetCurrentTime();
+        now = SampleCurrentTime();
     }
 #else
     std::unique_lock<std::mutex> lock(_mutex);
