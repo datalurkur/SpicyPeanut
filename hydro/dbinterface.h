@@ -2,7 +2,7 @@
 #define _DBINTERFACE_H_
 
 #include "soci.h"
-#include "backends/odbc/soci-odbc.h"
+#include "odbc/soci-odbc.h"
 
 #include <map>
 #include <memory>
@@ -24,7 +24,11 @@ public:
     static void Init();
 
 private:
+#if _WINDOWS_BUILD
     const std::string kConnectionStringPath = "connectionString.dat";
+#else
+    const std::string kConnectionStringPath = "/etc/spicyd.conf";
+#endif
 
 public:
     DBInterface();

@@ -29,7 +29,7 @@ bool DBInterface::connect()
     std::ifstream cStrInput(kConnectionStringPath, std::ios::in);
     if (!cStrInput.is_open())
     {
-        LogError("Failed to open connection string file, no data will be logged");
+        LogError("Failed to open " << kConnectionStringPath << ", no data will be logged");
         return false;
     }
 
@@ -47,6 +47,7 @@ bool DBInterface::connect()
 
     try
     {
+        LogInfo("Attemping to connect with connection string " << connectionString);
         _session = std::make_shared<soci::session>(soci::odbc, connectionString);
     }
     catch (std::exception const & e)
