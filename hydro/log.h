@@ -40,6 +40,8 @@ do { \
     Log::Instance->log(line); \
 } while(false)
 
+#define LogError(stream) LogLineToInstance(stream)
+#define LogWarn(stream) LogLineToInstance(stream)
 #define LogInfo(stream) LogLineToInstance(stream)
 
 #if DEBUG_ON == 1

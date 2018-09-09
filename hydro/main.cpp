@@ -2,14 +2,15 @@
 
 #include "command.h"
 #include "commandqueue.h"
+#include "dbinterface.h"
 #include "log.h"
 #include "schedule.h"
 #include "ucinterface.h"
 
 /*
 TODO:
-- Read initial state of pins
 - Add i2c code
+- Connection string read from disk
 */
 
 static std::shared_ptr<CommandQueue> commandQueue = nullptr;
@@ -24,6 +25,7 @@ int main()
 {
     Log::Init(true, "");
 
+    DBInterface::Init();
     UCInterface::Init();
 
     std::shared_ptr<Schedule> schedule = std::make_shared<Schedule>();

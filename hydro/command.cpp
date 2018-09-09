@@ -1,5 +1,6 @@
 #include "command.h"
 #include "config.h"
+#include "dbinterface.h"
 #include "log.h"
 #include "ucinterface.h"
 
@@ -47,10 +48,11 @@ void SampleDataCommand::execute()
     {
         if (UCInterface::Instance->sampleDHT22())
         {
-            float lastTemperature = UCInterface::Instance->getLastTemperature();
-            float humidity = UCInterface::Instance->getLastHumidity();
+            float temperature = UCInterface::Instance->getLastTemperature();
+            float humidity    = UCInterface::Instance->getLastHumidity();
 
-            // FIXME - Log these values
+            DBInterface::Instance->logSample(DBInterface::SampleType::temperature, temperature);
+            DBInterface::Instance->logSample(DBInterface::SampleType::humidity,    humidity);
 
             sampledDHT = true;
             break;
