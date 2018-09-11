@@ -1,9 +1,9 @@
 CXX = g++
-CXXFLAGS = -std=c++11 -I ../wiringPi/wiringPi
-LDLIBS = -lwiringPi -lc -lpthread
+CXXFLAGS = -std=c++11 -I ../wiringPi/wiringPi -I /usr/include/soci
+LDLIBS = -lwiringPi -lc -lpthread -lsoci_core -lsoci_odbc
 
-HEADERS = command.h commandqueue.h config.h log.h schedule.h state.h ucinterface.h util.h
-OBJECTS = command.o commandqueue.o log.o main.o schedule.o state.o ucinterface.o util.o
+HEADERS = command.h commandqueue.h config.h dbinterface.h log.h schedule.h state.h ucinterface.h util.h
+OBJECTS = command.o commandqueue.o dbinterface.o log.o main.o schedule.o state.o ucinterface.o util.o
 
 default: SpicyPeanut
 
