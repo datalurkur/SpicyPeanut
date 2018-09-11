@@ -10,6 +10,8 @@
 class DBInterface
 {
 public:
+    const int kRetries = 3;
+
     // NOTE: These match the ids in the database.  Because I'm lazy.
     enum SampleType
     {
@@ -30,11 +32,14 @@ public:
     DBInterface();
     virtual ~DBInterface();
 
-    bool connect();
-
     void logSample(SampleType type, double measurement);
 
 private:
+    void readConnectionString();
+    bool connect();
+
+private:
+    std::string _connectionString;
     std::shared_ptr<soci::session> _session;
 };
 

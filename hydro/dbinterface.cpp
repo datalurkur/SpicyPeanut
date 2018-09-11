@@ -11,8 +11,9 @@ void DBInterface::Init()
     Instance = std::make_shared<DBInterface>();
 }
 
-DBInterface::DBInterface(): _session(nullptr)
+DBInterface::DBInterface(): _connectionString(""), _session(nullptr)
 {
+    readConnectionString();
     connect();
 }
 
@@ -24,30 +25,35 @@ DBInterface::~DBInterface()
     }
 }
 
-bool DBInterface::connect()
+void DBInterface::readConnectionString()
 {
     std::ifstream cStrInput(kConnectionStringPath, std::ios::in);
     if (!cStrInput.is_open())
     {
         LogError("Failed to open connection string file, no data will be logged");
-        return false;
     }
 
-    std::string connectionString;
     cStrInput.seekg(0, std::ios::end);
-    connectionString.reserve((int)cStrInput.tellg());
+    _connectionString.reserve((int)cStrInput.tellg());
     cStrInput.seekg(0, std::ios::beg);
 
-    connectionString.assign((std::istreambuf_iterator<char>(cStrInput)), std::istreambuf_iterator<char>());
-    if (connectionString.length() == 0)
+    _connectionString.assign((std::istreambuf_iterator<char>(cStrInput)), std::istreambuf_iterator<char>());
+    if (_connectionString.length() == 0)
     {
         LogError("Failed to read connection string data, no samples will be logged");
-        return false;
     }
+}
 
+bool DBInterface::connect()
+{
+    if (_connectionString.length() == 0) { return false; }
     try
     {
-        _session = std::make_shared<soci::session>(soci::odbc, connectionString);
+        if (_session != nullptr)
+        {
+            _session->close();
+        }
+        _session = std::make_shared<soci::session>(soci::odbc, _connectionString);
     }
     catch (std::exception const & e)
     {
@@ -60,13 +66,18 @@ bool DBInterface::connect()
 
 void DBInterface::logSample(DBInterface::SampleType type, double measurement)
 {
-    if (_session == nullptr) { return; }
-    try
+    for (int i = 0; i < kRetries; ++i)
     {
-        (*_session) << "insert into sample (typeid, sampledata) values (:tp, :mm)", soci::use((int)type, "tp"), soci::use(measurement, "mm");
-    }
-    catch (std::exception const & e)
-    {
-        LogError("Failed to log sample data: " << e.what());
+        try
+        {
+            (*_session) << "insert into sample (typeid, sampledata) values (:tp, :mm)", soci::use((int)type, "tp"), soci::use(measurement, "mm");
+            break;
+        }
+        catch (std::exception const & e)
+        {
+            LogError("Failed to log data - " << e.what());
+        }
+        LogInfo("Attempting to reconnect and log (retry " << (i+1) << ")");
+        connect();
     }
 }
