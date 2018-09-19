@@ -54,7 +54,7 @@ bool DBInterface::connect()
         {
             _session->close();
         }
-        LogInfo("Attemping to connect with connection string " << connectionString);
+        LogInfo("Attemping to connect with connection string " << _connectionString);
         _session = std::make_shared<soci::session>(soci::odbc, _connectionString);
     }
     catch (std::exception const & e)

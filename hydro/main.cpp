@@ -30,16 +30,16 @@ int main()
 
     std::shared_ptr<Schedule> schedule = std::make_shared<Schedule>();
 
-    // Lights on in the morning
+    // Lights on in the morning (4am)
     schedule->addEvent(std::make_shared<ChangeStateEvent>(
-        60 * 7,
+        60 * 4,
         State::Property::LightOn,
         true
     ));
 
-    // Lights off in the evening
+    // Lights off in the evening (10pm)
     schedule->addEvent(std::make_shared<ChangeStateEvent>(
-        60 * 21,
+        60 * 22,
         State::Property::LightOn,
         false
     ));

@@ -1,3 +1,9 @@
 [submodule "wiringPi"]
 	path = wiringPi
 	url = git://git.drogon.net/wiringPi
+[submodule "soci"]
+	path = soci
+	url = git://github.com/SOCI/soci.git
+[submodule "hydro/soci"]
+	path = hydro/soci
+	url = git://github.com/SOCI/soci.git
