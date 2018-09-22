@@ -30,6 +30,8 @@ int main()
     DBInterface::Init();
     UCInterface::Init();
 
+    commandQueue = std::make_shared<CommandQueue>();
+
     std::shared_ptr<Schedule> schedule = std::make_shared<Schedule>();
     std::shared_ptr<GlobalState> state = std::make_shared<GlobalState>();
     std::shared_ptr<SocketListener> rcListener = std::make_shared<SocketListener>(commandQueue);
@@ -78,7 +80,6 @@ int main()
         schedule->addEvent(std::make_shared<SampleDataEvent>(time));
     }
 
-    commandQueue = std::make_shared<CommandQueue>();
     schedule->start(commandQueue);
 
     bool commandReady = false;

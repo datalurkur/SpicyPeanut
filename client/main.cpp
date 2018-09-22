@@ -46,6 +46,16 @@ void resumeDataCollection()
 
 int main()
 {
+#if _WINDOWS_BUILD
+    WSADATA wsaData;
+    int startupResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    if (startupResult != NO_ERROR)
+    {
+        std::cout << "Failed to initialize Winsock" << std::endl;
+        return -1;
+    }
+#endif
+
     socketDescriptor = socket(AF_INET, SOCK_STREAM, 0);
     if (socketDescriptor < 0)
     {
@@ -100,6 +110,10 @@ int main()
     }
 
     close(socketDescriptor);
+
+#if _WINDOWS_BUILD
+    WSACleanup();
+#endif
 
     return 0;
 }

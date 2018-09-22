@@ -9,6 +9,7 @@
 #include <WinSock2.h>
 #define close closesocket
 #else
+#include <errno.h>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <unistd.h>
@@ -32,6 +33,12 @@ void SocketListener::startListening()
 {
     if (_listenThread != nullptr) { return; }
 
+#if _WINDOWS_BUILD
+    WSADATA wsaData;
+    int startupResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    if (startupResult != NO_ERROR) { return; }
+#endif
+
     _keepListening = true;
     _listenThread = std::make_shared<std::thread>(&SocketListener::listenThreadLoop, this);
 }
@@ -46,6 +53,10 @@ void SocketListener::stopListening()
         _listenThread->join();
     }
     _listenThread = nullptr;
+
+#if _WINDOWS_BUILD
+    WSACleanup();
+#endif
 }
 
 void SocketListener::listenThreadLoop()
@@ -57,6 +68,7 @@ void SocketListener::listenThreadLoop()
     if (_socketDescriptor < 0)
     {
         LogWarn("Failed to open listen socket");
+        reportLastSocketError();
         return;
     }
 
@@ -81,6 +93,7 @@ void SocketListener::listenThreadLoop()
     if (bindResult < 0)
     {
         LogWarn("Failed to bind listen socket");
+        reportLastSocketError();
         return;
     }
 
@@ -88,6 +101,7 @@ void SocketListener::listenThreadLoop()
     if (listenResult < 0)
     {
         LogWarn("Failed to listen on bound socket");
+        reportLastSocketError();
         close(_socketDescriptor);
         return;
     }
@@ -99,13 +113,18 @@ void SocketListener::listenThreadLoop()
         timeout.tv_sec = kTimeoutSeconds;
         timeout.tv_usec = 0;
 
-        fd_set readSet, writeSet, exceptionSet;
+        fd_set readSet, exceptionSet;
+        FD_ZERO(&readSet);
+        FD_SET(_socketDescriptor, &readSet);
+        FD_ZERO(&exceptionSet);
+        FD_SET(_socketDescriptor, &exceptionSet);
 
-        int selectResult = select(_socketDescriptor + 1, &readSet, &writeSet, &exceptionSet, &timeout);
+        int selectResult = select(_socketDescriptor + 1, &readSet, NULL, &exceptionSet, &timeout);
         if (selectResult == -1 || FD_ISSET(_socketDescriptor, &exceptionSet))
         {
             // Error while waiting
             LogWarn("Error waiting for clients to connect");
+            reportLastSocketError();
             break;
         }
         else if (selectResult == 0)
@@ -133,14 +152,52 @@ void SocketListener::handleNewClient()
 
     sockaddr_in clientAddr;
     memset(&clientAddr, 0, sizeof(clientAddr));
+#if _WINDOWS_BUILD
+    int sizeOfClientAddr = sizeof(clientAddr);
+#else
     unsigned int sizeOfClientAddr = sizeof(clientAddr);
+#endif
     int clientDescriptor = accept(_socketDescriptor, (struct sockaddr *)&clientAddr, &sizeOfClientAddr);
     if (clientDescriptor < 0)
     {
         LogWarn("Failed to accept incoming client connection");
+        reportLastSocketError();
         return;
     }
 
     std::shared_ptr<CommandListener> newCommandListener = std::make_shared<CommandListener>(clientDescriptor, _commandQueue);
     _listeners.push_back(newCommandListener);
+}
+
+void SocketListener::reportLastSocketError()
+{
+#if _WINDOWS_BUILD
+    int errorCode = WSAGetLastError();
+    switch (errorCode)
+    {
+    case WSANOTINITIALISED:
+        LogError("Socket layer used without being initialized");
+        break;
+    case WSAEFAULT:
+        LogError("Failed to allocate resources for socket operation");
+        break;
+    case WSAENETDOWN:
+        LogError("Network subsystem failure");
+        break;
+    case WSAEINVAL:
+        LogError("Invalid parameters");
+        break;
+    case WSAEINTR:
+        LogError("A blocking operation was cancelled");
+        break;
+    case WSAEINPROGRESS:
+        LogError("A socket operation is already in progress");
+        break;
+    case WSAENOTSOCK:
+        LogError("Invalid socket descriptor");
+        break;
+    }
+#else
+    LogError("Socket error - " << strerror(errno));
+#endif
 }

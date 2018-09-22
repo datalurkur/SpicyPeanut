@@ -55,8 +55,13 @@ void CommandListener::listenThreadLoop()
         timeout.tv_sec = kTimeoutSeconds;
         timeout.tv_usec = 0;
 
-        fd_set readSet, writeSet, exceptionSet;
-        int selectResult = select(_socketDescriptor + 1, &readSet, &writeSet, &exceptionSet, &timeout);
+        fd_set readSet, exceptionSet;
+        FD_ZERO(&readSet);
+        FD_SET(_socketDescriptor, &readSet);
+        FD_ZERO(&exceptionSet);
+        FD_SET(_socketDescriptor, &exceptionSet);
+
+        int selectResult = select(_socketDescriptor + 1, &readSet, NULL, &exceptionSet, &timeout);
         if (selectResult == -1 || FD_ISSET(_socketDescriptor, &exceptionSet))
         {
             LogWarn("Error while waiting for data from client");

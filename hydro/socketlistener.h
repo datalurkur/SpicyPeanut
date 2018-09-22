@@ -23,6 +23,7 @@ public:
 private:
     void listenThreadLoop();
     void handleNewClient();
+    void reportLastSocketError();
 
 private:
     bool _keepListening;
