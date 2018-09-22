@@ -16,4 +16,7 @@
 #define PIN_DHT22 27
 #endif
 
+#define PH_PROBE_CHANNEL 0x63
+#define EC_PROBE_CHANNEL 0x64
+
 #endif

@@ -73,11 +73,35 @@ void SampleDataCommand::execute(std::shared_ptr<GlobalState> state)
     // FIXME - Add more sampling
 }
 
-SetDataCollectionState::SetDataCollectionState(bool enabled): _enabled(enabled)
+SetDataCollectionStateCommand::SetDataCollectionStateCommand(bool enabled): _enabled(enabled)
 { }
 
-void SetDataCollectionState::execute(std::shared_ptr<GlobalState> state)
+void SetDataCollectionStateCommand::execute(std::shared_ptr<GlobalState> state)
 {
     LogInfo("Setting data collection state to " << (_enabled ? "on" : "off"));
     state->setDataCollectionEnabled(_enabled);
+}
+
+SetCalibrationPointCommand::SetCalibrationPointCommand(UCInterface::CalibrationType type, UCInterface::CalibrationPoint point): _type(type), _point(point)
+{ }
+
+void SetCalibrationPointCommand::execute(std::shared_ptr<GlobalState> state)
+{
+    switch (_type)
+    {
+    case UCInterface::CalibrationType::pH:
+        UCInterface::Instance->setPHCalibrationPoint(_point);
+        break;
+    case UCInterface::CalibrationType::EC:
+        UCInterface::Instance->setECCalibrationPoint(_point);
+        break;
+    default:
+        LogWarn("Unknown calibration type " << _type);
+        break;
+    }
+}
+
+void ResetProbesCommand::execute(std::shared_ptr<GlobalState> state)
+{
+    UCInterface::Instance->resetProbes();
 }

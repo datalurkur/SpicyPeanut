@@ -12,7 +12,6 @@
 /*
 TODO:
 - Add i2c code
-- Connection string read from disk
 */
 
 static std::shared_ptr<CommandQueue> commandQueue = nullptr;

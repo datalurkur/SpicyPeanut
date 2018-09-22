@@ -2,6 +2,7 @@
 #define _COMMAND_H_
 
 #include "state.h"
+#include "ucinterface.h"
 
 #include <list>
 #include <memory>
@@ -45,14 +46,33 @@ public:
     virtual void execute(std::shared_ptr<GlobalState> state);
 };
 
-class SetDataCollectionState : public Command
+class SetDataCollectionStateCommand : public Command
 {
 public:
-    SetDataCollectionState(bool enabled);
+    SetDataCollectionStateCommand(bool enabled);
 
     virtual void execute(std::shared_ptr<GlobalState> state);
+
 private:
     bool _enabled;
+};
+
+class SetCalibrationPointCommand : public Command
+{
+public:
+    SetCalibrationPointCommand(UCInterface::CalibrationType type, UCInterface::CalibrationPoint point);
+
+    virtual void execute(std::shared_ptr<GlobalState> state);
+
+private:
+    UCInterface::CalibrationType _type;
+    UCInterface::CalibrationPoint _point;
+};
+
+class ResetProbesCommand : public Command
+{
+public:
+    virtual void execute(std::shared_ptr<GlobalState> state);
 };
 
 #endif

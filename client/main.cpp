@@ -34,16 +34,6 @@ void sendCommand(RemoteCommand type)
     }
 }
 
-void suspendDataCollection()
-{
-    sendCommand(RemoteCommand::SuspendSampling);
-}
-
-void resumeDataCollection()
-{
-    sendCommand(RemoteCommand::ResumeSampling);
-}
-
 int main()
 {
 #if _WINDOWS_BUILD
@@ -89,9 +79,16 @@ int main()
     {
         int selection;
         std::cout << "Make a selection:" << std::endl;
-        std::cout << " 1. Exit" << std::endl;
-        std::cout << " 2. Suspend Data Collection" << std::endl;
-        std::cout << " 3. Resume Data Collection" << std::endl;
+        std::cout << " 1.  Exit" << std::endl;
+        std::cout << " 2.  Suspend Data Collection" << std::endl;
+        std::cout << " 3.  Resume Data Collection" << std::endl;
+        std::cout << " 4.  Calibrate pH Probe (Mid  - Step 1)" << std::endl;
+        std::cout << " 5.  Calibrate pH Probe (Low  - Step 2)" << std::endl;
+        std::cout << " 6.  Calibrate pH Probe (High - Step 3)" << std::endl;
+        std::cout << " 7.  Calibrate EC Probe (Dry  - Step 1)" << std::endl;
+        std::cout << " 8.  Calibrate EC Probe (Low  - Step 2)" << std::endl;
+        std::cout << " 9.  Calibrate EC Probe (High - Step 3)" << std::endl;
+        std::cout << " 10. Reset Probes (Calibration Done)" << std::endl;
         std::cin >> selection;
         switch (selection)
         {
@@ -99,10 +96,31 @@ int main()
             done = true;
             break;
         case 2:
-            suspendDataCollection();
+            sendCommand(RemoteCommand::SuspendSampling);
             break;
         case 3:
-            resumeDataCollection();
+            sendCommand(RemoteCommand::ResumeSampling);
+            break;
+        case 4:
+            sendCommand(RemoteCommand::CalibratePHMid);
+            break;
+        case 5:
+            sendCommand(RemoteCommand::CalibratePHLow);
+            break;
+        case 6:
+            sendCommand(RemoteCommand::CalibratePHHigh);
+            break;
+        case 7:
+            sendCommand(RemoteCommand::CalibrateECDry);
+            break;
+        case 8:
+            sendCommand(RemoteCommand::CalibrateECLow);
+            break;
+        case 9:
+            sendCommand(RemoteCommand::CalibrateECHigh);
+            break;
+        case 10:
+            sendCommand(RemoteCommand::ResetProbes);
             break;
         default:
             std::cout << "Invalid selection" << std::endl;

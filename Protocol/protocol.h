@@ -5,6 +5,13 @@ enum RemoteCommand
 {
     SuspendSampling = 0,
     ResumeSampling,
+    CalibratePHMid,
+    CalibratePHLow,
+    CalibratePHHigh,
+    CalibrateECDry,
+    CalibrateECLow,
+    CalibrateECHigh,
+    ResetProbes
 };
 
 const unsigned int kRemoteCommandPort = 5009;

@@ -90,11 +90,31 @@ void CommandListener::readCommand()
     switch (commandBuffer[0])
     {
     case RemoteCommand::SuspendSampling:
-        _commandQueue->queueCommand(std::make_shared<SetDataCollectionState>(false));
+        _commandQueue->queueCommand(std::make_shared<SetDataCollectionStateCommand>(false));
         break;
     case RemoteCommand::ResumeSampling:
-        _commandQueue->queueCommand(std::make_shared<SetDataCollectionState>(true));
+        _commandQueue->queueCommand(std::make_shared<SetDataCollectionStateCommand>(true));
         break;
+    case RemoteCommand::CalibratePHMid:
+        _commandQueue->queueCommand(std::make_shared<SetCalibrationPointCommand>(UCInterface::CalibrationType::pH, UCInterface::CalibrationPoint::Mid));
+        break;
+    case RemoteCommand::CalibratePHLow:
+        _commandQueue->queueCommand(std::make_shared<SetCalibrationPointCommand>(UCInterface::CalibrationType::pH, UCInterface::CalibrationPoint::Low));
+        break;
+    case RemoteCommand::CalibratePHHigh:
+        _commandQueue->queueCommand(std::make_shared<SetCalibrationPointCommand>(UCInterface::CalibrationType::pH, UCInterface::CalibrationPoint::High));
+        break;
+    case RemoteCommand::CalibrateECDry:
+        _commandQueue->queueCommand(std::make_shared<SetCalibrationPointCommand>(UCInterface::CalibrationType::EC, UCInterface::CalibrationPoint::Dry));
+        break;
+    case RemoteCommand::CalibrateECLow:
+        _commandQueue->queueCommand(std::make_shared<SetCalibrationPointCommand>(UCInterface::CalibrationType::EC, UCInterface::CalibrationPoint::Low));
+        break;
+    case RemoteCommand::CalibrateECHigh:
+        _commandQueue->queueCommand(std::make_shared<SetCalibrationPointCommand>(UCInterface::CalibrationType::EC, UCInterface::CalibrationPoint::High));
+        break;
+    case RemoteCommand::ResetProbes:
+        _commandQueue->queueCommand(std::make_shared<ResetProbesCommand>());
     default:
         LogWarn("Unrecognized remote command " << commandBuffer[0]);
     }
