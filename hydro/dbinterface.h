@@ -2,7 +2,7 @@
 #define _DBINTERFACE_H_
 
 #include "soci.h"
-#include "backends/odbc/soci-odbc.h"
+#include "odbc/soci-odbc.h"
 
 #include <map>
 #include <memory>

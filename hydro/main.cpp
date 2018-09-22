@@ -91,5 +91,6 @@ int main()
         }
     }
 
+    LogInfo("Spicyd exiting");
     return 0;
 }

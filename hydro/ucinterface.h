@@ -42,10 +42,8 @@ public:
     bool getEC(float& ecValue);
 
 private:
-    bool getResponseString(int fd, std::string& response);
-
     void writeI2CCommand(int fd, const std::string& command);
-    unsigned int readI2CResponse(int fd, char* buffer, unsigned int maxLength);
+    bool readI2CResponse(int fd, std::string& response, int expectedLength);
 
 private:
     std::chrono::system_clock::time_point _nextDHT22Sample;

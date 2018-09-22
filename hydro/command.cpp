@@ -70,7 +70,25 @@ void SampleDataCommand::execute(std::shared_ptr<GlobalState> state)
         LogInfo("Failed to get data from DHT22");
     }
 
-    // FIXME - Add more sampling
+    float pHValue;
+    if (UCInterface::Instance->getPH(pHValue))
+    {
+        DBInterface::Instance->logSample(DBInterface::SampleType::ph, pHValue);
+    }
+    else
+    {
+        LogInfo("Failed to sample pH, calibration may be required");
+    }
+
+    float ecValue;
+    if (UCInterface::Instance->getEC(ecValue))
+    {
+        DBInterface::Instance->logSample(DBInterface::SampleType::ec, ecValue);
+    }
+    else
+    {
+        LogInfo("Failed to sample EC, calibration may be required");
+    }
 }
 
 SetDataCollectionStateCommand::SetDataCollectionStateCommand(bool enabled): _enabled(enabled)

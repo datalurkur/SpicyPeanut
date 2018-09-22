@@ -6,6 +6,7 @@
 #if !_WINDOWS_BUILD
 #include "wiringPi.h"
 #include "wiringPiI2C.h"
+#include <unistd.h>
 #endif
 
 #include <algorithm>
@@ -183,13 +184,13 @@ bool UCInterface::isPHProbeCalibrated()
     delay(300);
 #endif
     std::string response;
-    if (!getResponseString(_pHProbeFD, response))
+    if (!readI2CResponse(_pHProbeFD, response, 6))
     {
         LogError("Failed to get pH probe calibration state");
         return false;
     }
     LogInfo("pH probe calibration state: " << response);
-    bool calibrated = (response.length() == 6 && response[5] != 0);
+    bool calibrated = (response[5] != '0');
     LogInfo("pH probe is " << (calibrated ? "" : "NOT ") << "calibrated");
     return calibrated;
 }
@@ -214,7 +215,7 @@ void UCInterface::setPHCalibrationPoint(CalibrationPoint cPoint)
     delay(900);
 #endif
     std::string response;
-    if (!getResponseString(_pHProbeFD, response))
+    if (!readI2CResponse(_pHProbeFD, response, 0))
     {
         LogError("Failed to set calibration point");
     }
@@ -222,7 +223,7 @@ void UCInterface::setPHCalibrationPoint(CalibrationPoint cPoint)
 
 bool UCInterface::getPH(float& pHValue)
 {
-    if (_pHProbeReady)
+    if (!_pHProbeReady)
     {
         LogWarn("pH probe is not calibrated");
         return false;
@@ -233,7 +234,7 @@ bool UCInterface::getPH(float& pHValue)
     delay(900);
 #endif
     std::string response;
-    if (!getResponseString(_pHProbeFD, response))
+    if (!readI2CResponse(_pHProbeFD, response, 16))
     {
         LogError("Failed to sample pH");
         return false;
@@ -251,13 +252,13 @@ bool UCInterface::isECProbeCalibrated()
     delay(300);
 #endif
     std::string response;
-    if (!getResponseString(_ecProbeFD, response))
+    if (!readI2CResponse(_ecProbeFD, response, 6))
     {
         LogError("Failed to get EC probe calibration state");
         return false;
     }
     LogInfo("EC probe calibration state: " << response);
-    bool calibrated = (response.length() == 6 && response[5] != 0);
+    bool calibrated = (response[5] != '0');
     LogInfo("EC probe is " << (calibrated ? "" : "NOT ") << "calibrated");
     return calibrated;
 }
@@ -282,7 +283,7 @@ void UCInterface::setECCalibrationPoint(CalibrationPoint cPoint)
     delay(600);
 #endif
     std::string response;
-    if (!getResponseString(_pHProbeFD, response))
+    if (!readI2CResponse(_pHProbeFD, response, 0))
     {
         LogError("Failed to set calibration point");
     }
@@ -300,7 +301,7 @@ bool UCInterface::getEC(float& ecValue)
     delay(600);
 #endif
     std::string response;
-    if (!getResponseString(_ecProbeFD, response))
+    if (!readI2CResponse(_ecProbeFD, response, 16))
     {
         LogError("Failed to sample EC");
         return false;
@@ -311,54 +312,42 @@ bool UCInterface::getEC(float& ecValue)
     return true;
 }
 
-bool UCInterface::getResponseString(int fd, std::string& response)
+bool UCInterface::readI2CResponse(int fd, std::string& response, int expectedLength)
 {
-    char buffer[255];
-    int responseLength = readI2CResponse(fd, buffer, 255);
-    if (responseLength == 0)
+    int actualExpected = expectedLength + 2; // 1-byte response code + 1-byte null terminator
+    char buffer[512];
+    int bytesRead = read(fd, &buffer, actualExpected);
+    if (bytesRead != actualExpected)
     {
-        LogError("Got empty response string");
+        LogError("Expected " << actualExpected << " bytes, but read " << bytesRead << " instead.");
         return false;
     }
-    if (responseLength == 255)
+
+    int responseCode = buffer[0];
+    switch (responseCode)
     {
-        LogError("Response length exceeded buffer size");
+    case 2:
+        LogWarn("Syntax error in previous command");
+        return false;
+    case 254:
+        LogInfo("Data not ready, waiting");
+        return false;
+    case 255:
+        LogWarn("No data to send");
         return false;
     }
-    if (buffer[0] != 1)
-    {
-        LogError("Failed to get response string");
-        return false;
-    }
+
     response = std::string((char*)&buffer[1]);
     return true;
 }
 
 void UCInterface::writeI2CCommand(int fd, const std::string& command)
 {
-    for (unsigned int i = 0; i < command.length(); ++i)
+    if (fd < 0)
     {
-#if !_WINDOWS_BUILD
-        wiringPiI2CWrite(fd, command[i]);
-#endif
+        LogWarn("Invalid i2c handle");
+        return;
     }
-}
-
-unsigned int UCInterface::readI2CResponse(int fd, char* buffer, unsigned int maxLength)
-{
-    unsigned int i;
-    for (i = 0; i < maxLength; ++i)
-    {
-#if _WINDOWS_BUILD
-        buffer[i] = 0;
-#else
-        buffer[i] = wiringPiI2CRead(fd);
-#endif
-        if (buffer[i] == 0) { break; }
-    }
-    if (i == maxLength)
-    {
-        LogWarn("Max buffer length hit in i2c response");
-    }
-    return i - 1;
+    LogInfo("Writing command: '" << command << "'");
+    write(fd, command.c_str(), command.length());
 }
