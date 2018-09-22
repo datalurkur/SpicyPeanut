@@ -4,12 +4,15 @@
 #include "log.h"
 #include "protocol.h"
 
+#include <cstring>
+
 #if _WINDOWS_BUILD
 #include <WinSock2.h>
 #define close closesocket
 #else
 #include <netdb.h>
 #include <netinet/in.h>
+#include <unistd.h>
 #endif
 
 CommandListener::CommandListener(int socketDescriptor, std::shared_ptr<CommandQueue> commandQueue) : _socketDescriptor(socketDescriptor), _commandQueue(commandQueue)

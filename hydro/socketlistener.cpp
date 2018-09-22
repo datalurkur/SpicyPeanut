@@ -3,12 +3,15 @@
 #include "protocol.h"
 #include "socketlistener.h"
 
+#include <cstring>
+
 #if _WINDOWS_BUILD
 #include <WinSock2.h>
 #define close closesocket
 #else
 #include <netdb.h>
 #include <netinet/in.h>
+#include <unistd.h>
 #endif
 
 SocketListener::SocketListener(std::shared_ptr<CommandQueue> commandQueue): _commandQueue(commandQueue)
@@ -119,7 +122,7 @@ void SocketListener::handleNewClient()
 {
     sockaddr_in clientAddr;
     memset(&clientAddr, 0, sizeof(clientAddr));
-    int sizeOfClientAddr = sizeof(clientAddr);
+    unsigned int sizeOfClientAddr = sizeof(clientAddr);
     int clientDescriptor = accept(_socketDescriptor, (struct sockaddr *)&clientAddr, &sizeOfClientAddr);
     if (clientDescriptor < 0)
     {

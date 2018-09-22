@@ -103,7 +103,7 @@ bool UCInterface::sampleDHT22()
         _lastTemperature = c * 1.8f + 32;
         _lastHumidity = h;
         succeeded = true;
-        LogInfo("Successfully sampled DHT22 (" << _lastTemperature << " degrees Fahrenheit, " << _lastHumidity << "% humidity");
+        LogInfo("Successfully sampled DHT22 (" << _lastTemperature << " degrees Fahrenheit, " << _lastHumidity << "% humidity)");
     }
     else
     {
