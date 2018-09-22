@@ -1,0 +1,134 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="SpicyPeanutModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="sample">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="typeid" Type="int" Nullable="false" />
+          <Property Name="sampledata" Type="real" Nullable="false" />
+          <Property Name="sampledate" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="sampletype">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="name" Type="varchar" MaxLength="32" />
+        </EntityType>
+        <Association Name="FK__sample__typeid__59063A47">
+          <End Role="sampletype" Type="Self.sampletype" Multiplicity="1" />
+          <End Role="sample" Type="Self.sample" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="sampletype">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="sample">
+              <PropertyRef Name="typeid" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="SpicyPeanutModelStoreContainer">
+          <EntitySet Name="sample" EntityType="Self.sample" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="sampletype" EntityType="Self.sampletype" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK__sample__typeid__59063A47" Association="Self.FK__sample__typeid__59063A47">
+            <End Role="sampletype" EntitySet="sampletype" />
+            <End Role="sample" EntitySet="sample" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="SpicyPeanutModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="sample">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="typeid" Type="Int32" Nullable="false" />
+          <Property Name="sampledata" Type="Single" Nullable="false" />
+          <Property Name="sampledate" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="sampletype" Relationship="Self.FK__sample__typeid__59063A47" FromRole="sample" ToRole="sampletype" />
+        </EntityType>
+        <EntityType Name="sampletype">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" MaxLength="32" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="samples" Relationship="Self.FK__sample__typeid__59063A47" FromRole="sampletype" ToRole="sample" />
+        </EntityType>
+        <Association Name="FK__sample__typeid__59063A47">
+          <End Role="sampletype" Type="Self.sampletype" Multiplicity="1" />
+          <End Role="sample" Type="Self.sample" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="sampletype">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="sample">
+              <PropertyRef Name="typeid" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="SpicyPeanutEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="samples" EntityType="Self.sample" />
+          <EntitySet Name="sampletypes" EntityType="Self.sampletype" />
+          <AssociationSet Name="FK__sample__typeid__59063A47" Association="Self.FK__sample__typeid__59063A47">
+            <End Role="sampletype" EntitySet="sampletypes" />
+            <End Role="sample" EntitySet="samples" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="SpicyPeanutModelStoreContainer" CdmEntityContainer="SpicyPeanutEntities">
+          <EntitySetMapping Name="samples">
+            <EntityTypeMapping TypeName="SpicyPeanutModel.sample">
+              <MappingFragment StoreEntitySet="sample">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="typeid" ColumnName="typeid" />
+                <ScalarProperty Name="sampledata" ColumnName="sampledata" />
+                <ScalarProperty Name="sampledate" ColumnName="sampledate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="sampletypes">
+            <EntityTypeMapping TypeName="SpicyPeanutModel.sampletype">
+              <MappingFragment StoreEntitySet="sampletype">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

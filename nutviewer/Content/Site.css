@@ -1,0 +1,74 @@
+﻿body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+
+g.axes {
+    stroke: #777;
+    stroke-width: 1;
+}
+
+g.grid {
+    stroke: #ddd;
+    stroke-width: 1;
+}
+
+text.axisLabel {
+    fill: #777;
+    text-anchor: end;
+    font-size: 16px;
+}
+
+text.title {
+    fill: #000;
+    text-anchor: start;
+    font-size: 24px;
+}
+
+table.hud {
+    align-self: center;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 32px;
+}
+
+table.hud tr td {
+    border: 8px solid transparent;
+    border-collapse: collapse;
+    background-clip: padding-box;
+    font-size: 32px;
+    width: 128px;
+    height: 128px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+td.temperature {
+    color: #f30;
+    background-color: #eee;
+}
+
+td.humidity {
+    color: #39f;
+    background-color: #eee;
+}
