@@ -215,15 +215,19 @@ void UCInterface::setPHCalibrationPoint(CalibrationPoint cPoint)
     delay(900);
 #endif
     std::string response;
-    if (!readI2CResponse(_pHProbeFD, response, 0))
+    if (readI2CResponse(_pHProbeFD, response, 0))
+    {
+        LogInfo("Set pH " << cPoint << " calibration point");
+    }
+    else
     {
         LogError("Failed to set calibration point");
     }
 }
 
-bool UCInterface::getPH(float& pHValue)
+bool UCInterface::getPH(bool ignoreCalibration, float& pHValue)
 {
-    if (!_pHProbeReady)
+    if (!_pHProbeReady && !ignoreCalibration)
     {
         LogWarn("pH probe is not calibrated");
         return false;
@@ -278,20 +282,24 @@ void UCInterface::setECCalibrationPoint(CalibrationPoint cPoint)
         command.append("high,80000");
         break;
     }
-    writeI2CCommand(_pHProbeFD, command);
+    writeI2CCommand(_ecProbeFD, command);
 #if !_WINDOWS_BUILD
     delay(600);
 #endif
     std::string response;
-    if (!readI2CResponse(_pHProbeFD, response, 0))
+    if (readI2CResponse(_ecProbeFD, response, 0))
+    {
+        LogInfo("Set EC " << cPoint << " calibration point");
+    }
+    else
     {
         LogError("Failed to set calibration point");
     }
 }
 
-bool UCInterface::getEC(float& ecValue)
+bool UCInterface::getEC(bool ignoreCalibration, float& ecValue)
 {
-    if (!_ecProbeReady)
+    if (!_ecProbeReady && !ignoreCalibration)
     {
         LogWarn("EC probe is not calibrated");
         return false;

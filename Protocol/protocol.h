@@ -11,7 +11,9 @@ enum RemoteCommand
     CalibrateECDry,
     CalibrateECLow,
     CalibrateECHigh,
-    ResetProbes
+    ResetProbes,
+    ReadPH,
+    ReadEC
 };
 
 const unsigned int kRemoteCommandPort = 5009;

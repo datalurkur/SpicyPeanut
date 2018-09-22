@@ -71,7 +71,7 @@ void SampleDataCommand::execute(std::shared_ptr<GlobalState> state)
     }
 
     float pHValue;
-    if (UCInterface::Instance->getPH(pHValue))
+    if (UCInterface::Instance->getPH(false, pHValue))
     {
         DBInterface::Instance->logSample(DBInterface::SampleType::ph, pHValue);
     }
@@ -81,7 +81,7 @@ void SampleDataCommand::execute(std::shared_ptr<GlobalState> state)
     }
 
     float ecValue;
-    if (UCInterface::Instance->getEC(ecValue))
+    if (UCInterface::Instance->getEC(false, ecValue))
     {
         DBInterface::Instance->logSample(DBInterface::SampleType::ec, ecValue);
     }

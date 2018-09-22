@@ -84,6 +84,7 @@ void CommandListener::listenThreadLoop()
 
 void CommandListener::readCommand()
 {
+    float ignoredValue;
     unsigned char commandBuffer[kRemoteCommandSize];
     unsigned int bytesRead = recv(_socketDescriptor, (char*)&commandBuffer[0], kRemoteCommandSize, MSG_WAITALL);
     if (bytesRead != kRemoteCommandSize) { return; }
@@ -115,6 +116,13 @@ void CommandListener::readCommand()
         break;
     case RemoteCommand::ResetProbes:
         _commandQueue->queueCommand(std::make_shared<ResetProbesCommand>());
+        break;
+    case RemoteCommand::ReadPH:
+        UCInterface::Instance->getPH(true, ignoredValue);
+        break;
+    case RemoteCommand::ReadEC:
+        UCInterface::Instance->getEC(true, ignoredValue);
+        break;
     default:
         LogWarn("Unrecognized remote command " << commandBuffer[0]);
     }

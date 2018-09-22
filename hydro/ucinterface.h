@@ -34,12 +34,12 @@ public:
     // pH Probe
     bool isPHProbeCalibrated();
     void setPHCalibrationPoint(CalibrationPoint cPoint);
-    bool getPH(float& pHValue);
+    bool getPH(bool ignoreCalibration, float& pHValue);
 
     // EC Probe
     bool isECProbeCalibrated();
     void setECCalibrationPoint(CalibrationPoint cPoint);
-    bool getEC(float& ecValue);
+    bool getEC(bool ignoreCalibration, float& ecValue);
 
 private:
     void writeI2CCommand(int fd, const std::string& command);
