@@ -1,0 +1,34 @@
+﻿@model nutviewer.Models.GraphModel
+
+@{
+    ViewBag.Title = "Environmental Data";
+}
+
+<h2>Environmental Data</h2>
+<!--<img src="samples/chart.cshtml" />-->
+
+@foreach (nutviewer.Models.SampleGraph graph in Model.Graphs.Values)
+{
+    <svg class="lineGraph" viewBox="0 0 @graph.Width @graph.Height" width="100%">
+        <g class="axes">
+            @foreach (nutviewer.Models.GridLine line in graph.Axes)
+            {
+                <line x1="@line.X1" x2="@line.X2" y1="@line.Y1" y2="@line.Y2"></line>
+            }
+        </g>
+        <g class="grid">
+            @foreach (nutviewer.Models.GridLine line in graph.GridLines)
+            {
+                <line x1="@line.X1" x2="@line.X2" y1="@line.Y1" y2="@line.Y2"></line>
+            }
+        </g>
+        @foreach (nutviewer.Models.GraphLabel label in graph.Labels)
+        {
+            @: <text class="@label.Class" x="@label.X" y="@label.Y">@label.Text</text>
+        }
+        <polyline fill="none" stroke="@graph.Stroke" stroke-width="3" points="
+            @string.Join("\n", graph.Points.Select(s => $"{s.XPosition},{s.YPosition}").ToArray())
+        " />
+    </svg>
+}
+

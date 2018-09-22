@@ -1,0 +1,16 @@
+﻿@model nutviewer.Models.HomeDataModel
+
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<table class="hud">
+    <tr>
+        <td class="temperature">
+            @Model.LastTemperature.ToString("F0") F
+        </td>
+        <td class="humidity">
+            @Model.LastHumidity.ToString("F0") %
+        </td>
+    </tr>
+</table>

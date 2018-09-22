@@ -1,6 +1,7 @@
 #include "command.h"
 #include "config.h"
 #include "dbinterface.h"
+#include "globalstate.h"
 #include "log.h"
 #include "ucinterface.h"
 
@@ -12,18 +13,18 @@ void CompositeCommand::addCommand(std::shared_ptr<Command> subCommand)
     _subCommands.push_back(subCommand);
 }
 
-void CompositeCommand::execute()
+void CompositeCommand::execute(std::shared_ptr<GlobalState> state)
 {
     for (std::shared_ptr<Command> subCommand : _subCommands)
     {
-        subCommand->execute();
+        subCommand->execute(state);
     }
 }
 
 SetPropertyCommand::SetPropertyCommand(State::Property property, bool value): _property(property), _value(value)
 { }
 
-void SetPropertyCommand::execute()
+void SetPropertyCommand::execute(std::shared_ptr<GlobalState> state)
 {
 	LogInfo("Setting property " << _property << " to " << _value);
     switch (_property)
@@ -40,8 +41,14 @@ void SetPropertyCommand::execute()
     }
 }
 
-void SampleDataCommand::execute()
+void SampleDataCommand::execute(std::shared_ptr<GlobalState> state)
 {
+    if (!state->getDataCollectionEnabled())
+    {
+        LogInfo("Data collection is disabled, skipping");
+        return;
+    }
+
     LogInfo("Sampling data");
     bool sampledDHT = false;
     for (int i = 0; i < DHT22_RETRIES; ++i)
@@ -64,4 +71,12 @@ void SampleDataCommand::execute()
     }
 
     // FIXME - Add more sampling
+}
+
+SetDataCollectionState::SetDataCollectionState(bool enabled): _enabled(enabled)
+{ }
+
+void SetDataCollectionState::execute(std::shared_ptr<GlobalState> state)
+{
+    state->setDataCollectionEnabled(_enabled);
 }
