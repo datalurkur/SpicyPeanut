@@ -7,7 +7,7 @@ enum RemoteCommand
     ResumeSampling,
 };
 
-const unsigned int kRemoteCommandPort = 5050;
+const unsigned int kRemoteCommandPort = 5009;
 const unsigned int kRemoteCommandSize = 1;
 
 #endif

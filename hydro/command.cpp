@@ -78,5 +78,6 @@ SetDataCollectionState::SetDataCollectionState(bool enabled): _enabled(enabled)
 
 void SetDataCollectionState::execute(std::shared_ptr<GlobalState> state)
 {
+    LogInfo("Setting data collection state to " << (_enabled ? "on" : "off"));
     state->setDataCollectionEnabled(_enabled);
 }

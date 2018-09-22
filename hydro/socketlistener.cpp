@@ -50,6 +50,8 @@ void SocketListener::stopListening()
 
 void SocketListener::listenThreadLoop()
 {
+    LogInfo("Setting up listen socket");
+
     // Create listen socket
     _socketDescriptor = socket(AF_INET, SOCK_STREAM, 0);
     if (_socketDescriptor < 0)
@@ -58,6 +60,7 @@ void SocketListener::listenThreadLoop()
         return;
     }
 
+/*
     // Allow socket reuse
     int reuse = 1;
     int reuseResult = setsockopt(_socketDescriptor, SOL_SOCKET, SO_REUSEADDR, (char*)&reuse, sizeof(reuse));
@@ -66,6 +69,7 @@ void SocketListener::listenThreadLoop()
         LogWarn("Failed to allow socket reuse");
         return;
     }
+*/
 
     // Bind listen socket
     sockaddr_in serverAddr;
@@ -96,6 +100,7 @@ void SocketListener::listenThreadLoop()
         timeout.tv_usec = 0;
 
         fd_set readSet, writeSet, exceptionSet;
+
         int selectResult = select(_socketDescriptor + 1, &readSet, &writeSet, &exceptionSet, &timeout);
         if (selectResult == -1 || FD_ISSET(_socketDescriptor, &exceptionSet))
         {
@@ -113,6 +118,10 @@ void SocketListener::listenThreadLoop()
             // Incoming connection
             handleNewClient();
         }
+        else
+        {
+            LogInfo("Unexpected scenario");
+        }
     }
 
     close(_socketDescriptor);
@@ -120,6 +129,8 @@ void SocketListener::listenThreadLoop()
 
 void SocketListener::handleNewClient()
 {
+    LogInfo("Incoming connection");
+
     sockaddr_in clientAddr;
     memset(&clientAddr, 0, sizeof(clientAddr));
     unsigned int sizeOfClientAddr = sizeof(clientAddr);

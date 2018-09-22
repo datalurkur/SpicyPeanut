@@ -1,5 +1,6 @@
 #include "protocol.h"
 
+#include <cstring>
 #include <iostream>
 #include <memory>
 
@@ -9,6 +10,7 @@
 #else
 #include <netdb.h>
 #include <netinet/in.h>
+#include <unistd.h>
 #endif
 
 bool done = false;
@@ -70,6 +72,8 @@ int main()
         std::cout << "Failed to connect to server" << std::endl;
         return -1;
     }
+
+    std::cout << "Connected with result " << connectResult << std::endl;
 
     while (!done)
     {
