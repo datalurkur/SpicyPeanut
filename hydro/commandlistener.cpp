@@ -1,3 +1,4 @@
+#include "command.h"
 #include "commandlistener.h"
 #include "commandqueue.h"
 #include "log.h"
@@ -81,8 +82,10 @@ void CommandListener::readCommand()
     switch (commandBuffer[0])
     {
     case RemoteCommand::SuspendSampling:
+        _commandQueue->queueCommand(std::make_shared<SetDataCollectionState>(false));
         break;
     case RemoteCommand::ResumeSampling:
+        _commandQueue->queueCommand(std::make_shared<SetDataCollectionState>(true));
         break;
     default:
         LogWarn("Unrecognized remote command " << commandBuffer[0]);

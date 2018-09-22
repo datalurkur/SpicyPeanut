@@ -3,6 +3,7 @@
 #include "command.h"
 #include "commandqueue.h"
 #include "dbinterface.h"
+#include "globalstate.h"
 #include "log.h"
 #include "schedule.h"
 #include "ucinterface.h"
@@ -29,6 +30,7 @@ int main()
     UCInterface::Init();
 
     std::shared_ptr<Schedule> schedule = std::make_shared<Schedule>();
+    std::shared_ptr<GlobalState> state = std::make_shared<GlobalState>();
 
     // Lights on in the morning (4am)
     schedule->addEvent(std::make_shared<ChangeStateEvent>(
@@ -83,7 +85,7 @@ int main()
         std::shared_ptr<Command> cmd = nullptr;
         while (cmd = commandQueue->dequeueCommand())
         {
-            cmd->execute();
+            cmd->execute(state);
         }
     }
 
