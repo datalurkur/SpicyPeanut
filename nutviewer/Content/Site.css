@@ -52,23 +52,50 @@ table.hud {
     margin-top: 32px;
 }
 
+table.hud tr td.image {
+    width: 352px;
+}
+
+table.hud tr td.image img {
+    width: 352px;
+}
+
 table.hud tr td {
     border: 8px solid transparent;
     border-collapse: collapse;
     background-clip: padding-box;
-    font-size: 32px;
-    width: 128px;
-    height: 128px;
+    width: 176px;
+    height: 176px;
     text-align: center;
     vertical-align: middle;
 }
 
 td.temperature {
+    font-size: 66px;
     color: #f30;
     background-color: #eee;
 }
 
 td.humidity {
+    font-size: 66px;
     color: #39f;
+    background-color: #eee;
+}
+
+td.ph {
+    font-size: 48px;
+    color: #90d;
+    background-color: #eee;
+}
+
+td.ec {
+    font-size: 27px;
+    color: #395;
+    background-color: #eee;
+}
+
+td.tds {
+    font-size: 36px;
+    color: #650;
     background-color: #eee;
 }

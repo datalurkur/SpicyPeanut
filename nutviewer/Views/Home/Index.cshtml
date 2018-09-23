@@ -6,11 +6,29 @@
 
 <table class="hud">
     <tr>
+        <td class="image" colspan="2">
+            <img src="@Url.Content("~/Content/Images/last_capture.png")" />
+        </td>
+    </tr>
+    <tr>
         <td class="temperature">
             @Model.LastTemperature.ToString("F0") F
         </td>
         <td class="humidity">
             @Model.LastHumidity.ToString("F0") %
+        </td>
+    </tr>
+    <tr>
+        <td class="ph">
+            @Model.LastPH.ToString("F1") pH
+        </td>
+        <td class="tds">
+            @Model.LastTDS.ToString("F0") ppm
+        </td>
+    </tr>
+    <tr>
+        <td class="ec">
+            @Model.LastEC.ToString("F0") µS / cm
         </td>
     </tr>
 </table>

@@ -58,7 +58,7 @@
 
         public GraphModel(int width, int height, IEnumerable<sample> samples)
         {
-            int leftPadding = 32;
+            int leftPadding = 48;
             int rightPadding = 0;
             int topPadding = 32;
             int bottomPadding = 64;
@@ -78,31 +78,55 @@
             {
                 0, // Not used
                 60, // Temperature
-                20, // Humidity
+                40, // Humidity
+                6, // pH
+                1500, // EC
+                500, // TDS
             };
             double[] dataTypeMaxima =
             {
                 0, // Not used
-                90, // Temperature
-                80, // Humidity
+                85, // Temperature
+                70, // Humidity
+                8, // pH
+                2000, // EC
+                1500, // TDS
             };
-            int[] dataTypeGridStep =
+            double[] dataTypeGridStep =
             {
                 0,
                 5,
-                5
+                5,
+                0.2,
+                100,
+                100
             };
             string[] dataTypeTitles =
             {
                 "Not Used",
                 "Temperature",
-                "Humidity"
+                "Humidity",
+                "pH",
+                "EC",
+                "TDS"
             };
             string[] dataTypeColors =
             {
                 "#000",
                 "#f30",
-                "#39f"
+                "#39f",
+                "#90d",
+                "#395",
+                "#650"
+            };
+            string[] axisFormat =
+            {
+                "",
+                "F0",
+                "F0",
+                "F1",
+                "F0",
+                "F0",
             };
 
             foreach (int sampleType in samples.Select(s => s.sampletype.id).Distinct())
@@ -149,7 +173,7 @@
                     {
                         X = this.MapX(0) - 2,
                         Y = yPosition + 2,
-                        Text = i.ToString("F0"),
+                        Text = i.ToString(axisFormat[sampleType]),
                         Class = "axisLabel"
                     });
                 }
