@@ -35,6 +35,8 @@ int main()
     std::shared_ptr<GlobalState> state = std::make_shared<GlobalState>();
     std::shared_ptr<SocketListener> rcListener = std::make_shared<SocketListener>(commandQueue);
 
+    //UCInterface::Instance->setECParameter("TDS", true);
+
     // Lights on in the morning (4am)
     schedule->addEvent(std::make_shared<ChangeStateEvent>(
         60 * 4,

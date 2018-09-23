@@ -18,7 +18,8 @@ public:
         temperature = 1,
         humidity,
         ph,
-        ec
+        ec,
+        tds
     };
 
     static std::shared_ptr<DBInterface> Instance;

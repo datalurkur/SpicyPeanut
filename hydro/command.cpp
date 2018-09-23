@@ -81,9 +81,11 @@ void SampleDataCommand::execute(std::shared_ptr<GlobalState> state)
     }
 
     float ecValue;
-    if (UCInterface::Instance->getEC(false, ecValue))
+    float tdsValue;
+    if (UCInterface::Instance->getEC(false, ecValue, tdsValue))
     {
         DBInterface::Instance->logSample(DBInterface::SampleType::ec, ecValue);
+        DBInterface::Instance->logSample(DBInterface::SampleType::tds, tdsValue);
     }
     else
     {

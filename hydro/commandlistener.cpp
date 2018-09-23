@@ -85,6 +85,7 @@ void CommandListener::listenThreadLoop()
 void CommandListener::readCommand()
 {
     float ignoredValue;
+    float ignoredValue2;
     unsigned char commandBuffer[kRemoteCommandSize];
     unsigned int bytesRead = recv(_socketDescriptor, (char*)&commandBuffer[0], kRemoteCommandSize, MSG_WAITALL);
     if (bytesRead != kRemoteCommandSize) { return; }
@@ -121,7 +122,7 @@ void CommandListener::readCommand()
         UCInterface::Instance->getPH(true, ignoredValue);
         break;
     case RemoteCommand::ReadEC:
-        UCInterface::Instance->getEC(true, ignoredValue);
+        UCInterface::Instance->getEC(true, ignoredValue, ignoredValue2);
         break;
     default:
         LogWarn("Unrecognized remote command " << commandBuffer[0]);

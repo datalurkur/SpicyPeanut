@@ -39,7 +39,8 @@ public:
     // EC Probe
     bool isECProbeCalibrated();
     void setECCalibrationPoint(CalibrationPoint cPoint);
-    bool getEC(bool ignoreCalibration, float& ecValue);
+    bool getEC(bool ignoreCalibration, float& ecValue, float& tdsValue);
+    void setECParameter(const std::string& parameter, bool enabled);
 
 private:
     void writeI2CCommand(int fd, const std::string& command);
