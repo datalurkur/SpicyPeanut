@@ -22,6 +22,9 @@ namespace nutviewer.Controllers
             {
                 LastTemperature = db.samples.Where(s => s.sampletype.id == 1).OrderByDescending(s => s.sampledate).First().sampledata,
                 LastHumidity = db.samples.Where(s => s.sampletype.id == 2).OrderByDescending(s => s.sampledate).First().sampledata,
+                LastPH = db.samples.Where(s => s.sampletype.id == 3).OrderByDescending(s => s.sampledate).First().sampledata,
+                LastEC = db.samples.Where(s => s.sampletype.id == 4).OrderByDescending(s => s.sampledate).First().sampledata,
+                LastTDS = db.samples.Where(s => s.sampletype.id == 5).OrderByDescending(s => s.sampledate).First().sampledata
             };
             return View(dataModel);
         }
