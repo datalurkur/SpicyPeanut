@@ -297,7 +297,7 @@ void UCInterface::setECCalibrationPoint(CalibrationPoint cPoint)
     }
 }
 
-bool UCInterface::getEC(bool ignoreCalibration, float& ecValue)
+bool UCInterface::getEC(bool ignoreCalibration, float& ecValue, float& tdsValue)
 {
     if (!_ecProbeReady && !ignoreCalibration)
     {
@@ -309,15 +309,41 @@ bool UCInterface::getEC(bool ignoreCalibration, float& ecValue)
     delay(600);
 #endif
     std::string response;
-    if (!readI2CResponse(_ecProbeFD, response, 16))
+    if (!readI2CResponse(_ecProbeFD, response, 24))
     {
         LogError("Failed to sample EC");
         return false;
     }
 
-    ecValue = (float)::atof(response.c_str());
-    LogInfo("Current EC value is " << ecValue);
+    int commaIndex = response.find(',', 0);
+    if (commaIndex < 0)
+    {
+        LogError("Failed to parse EC response");
+        return false;
+    }
+
+    ecValue = (float)::atof(response.substr(0, commaIndex).c_str());
+    tdsValue = (float)::atof(response.substr(commaIndex + 1).c_str());
+
+    LogInfo("Current EC value is " << ecValue << ", TDS value is " << tdsValue);
+
     return true;
+}
+
+void UCInterface::setECParameter(const std::string& parameter, bool enabled)
+{
+    std::string command = "O,";
+    command.append(parameter);
+    command.append(",");
+    command.append(enabled ? "1" : "0");
+
+    writeI2CCommand(_ecProbeFD, command);
+    delay(300);
+    std::string response;
+    if (!readI2CResponse(_ecProbeFD, response, 0))
+    {
+        LogWarn("Failed to set EC parameter " << parameter);
+    }
 }
 
 bool UCInterface::readI2CResponse(int fd, std::string& response, int expectedLength)
@@ -346,6 +372,7 @@ bool UCInterface::readI2CResponse(int fd, std::string& response, int expectedLen
     }
 
     response = std::string((char*)&buffer[1]);
+    LogInfo("Got response: '" << response << "'");
     return true;
 }
 
