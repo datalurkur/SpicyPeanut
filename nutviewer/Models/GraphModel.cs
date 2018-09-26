@@ -39,6 +39,14 @@
         public IEnumerable<GraphLabel> Labels { get; set; }
     }
 
+    public class GraphSample
+    {
+        public GraphSample() { }
+        public DateTime sampledate;
+        public double sampledata;
+        public int sampletypeid;
+    }
+
     public class GraphModel
     {
         public Dictionary<int, SampleGraph> Graphs { get; set; } = new Dictionary<int, SampleGraph>();
@@ -56,7 +64,7 @@
             return (int)(yRatio * yRange) + yMin;
         }
 
-        public GraphModel(int width, int height, IEnumerable<sample> samples)
+        public GraphModel(int width, int height, IEnumerable<GraphSample> samples)
         {
             int leftPadding = 48;
             int rightPadding = 0;
@@ -72,7 +80,16 @@
 
             DateTime minDate = samples.OrderBy(s => s.sampledate).First().sampledate;
             DateTime maxDate = samples.OrderByDescending(s => s.sampledate).First().sampledate;
-            double dateRange = (maxDate - minDate).TotalMinutes;
+            TimeSpan totalTime = maxDate - minDate;
+            int timeIntervalInHours = 3;
+            int t = (int)(totalTime.TotalHours / timeIntervalInHours);
+            while (t > 8)
+            {
+                t /= 2;
+                timeIntervalInHours *= 2;
+            }
+
+            double dateRange = totalTime.TotalMinutes;
 
             double[] dataTypeMinima =
             {
@@ -129,11 +146,11 @@
                 "F0",
             };
 
-            foreach (int sampleType in samples.Select(s => s.sampletype.id).Distinct())
+            foreach (int sampleType in samples.Select(s => s.sampletypeid).Distinct())
             {
                 double step = dataTypeGridStep[sampleType];
                 double range = dataTypeMaxima[sampleType] - dataTypeMinima[sampleType];
-                var graphSamples = samples.Where(s => s.sampletype.id == sampleType).Select(s => new SampleGraphPoint
+                var graphSamples = samples.Where(s => s.sampletypeid == sampleType).Select(s => new SampleGraphPoint
                 {
                     XData = s.sampledate,
                     YData = s.sampledata,
@@ -185,7 +202,7 @@
                 DateTime current = convertedMinDate.Date;
                 while (true)
                 {
-                    current = current.AddHours(6);
+                    current = current.AddHours(timeIntervalInHours);
                     if (current <= convertedMinDate) { continue; }
                     if (current >= convertedMaxDate) { break; }
                     
