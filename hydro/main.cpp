@@ -9,11 +9,6 @@
 #include "socketlistener.h"
 #include "ucinterface.h"
 
-/*
-TODO:
-- Add i2c code
-*/
-
 static std::shared_ptr<CommandQueue> commandQueue = nullptr;
 
 void signalHandler(int sig)
@@ -37,26 +32,32 @@ int main()
 
     //UCInterface::Instance->setECParameter("TDS", true);
 
+    int lightStartHour = 8;
+    int lightEndHour = 20;
     // Lights on in the morning (4am)
     schedule->addEvent(std::make_shared<ChangeStateEvent>(
-        60 * 4,
+        60 * lightStartHour,
         State::Property::LightOn,
         true
     ));
 
     // Lights off in the evening (10pm)
     schedule->addEvent(std::make_shared<ChangeStateEvent>(
-        60 * 22,
+        60 * lightEndHour,
         State::Property::LightOn,
         false
     ));
 
     // Watering schedule
-    int timesToWater = 8;
+    int oxygenatorRampInMinutes = 5;
+    int timesToWater = 6;
+    int wateringDurationInMinutes = 15;
     for (int i = 0; i < timesToWater; ++i)
     {
         int start = (24 / timesToWater) * i * 60;
-        int finish = start + 15;
+        int o2start = start - oxygenatorRampInMinutes;
+        if (o2start < 0) o2start += (24 * 60);
+        int finish = start + wateringDurationInMinutes;
 
         // Start watering
         schedule->addEvent(std::make_shared<ChangeStateEvent>(
@@ -64,11 +65,21 @@ int main()
             State::Property::ReservoirFlooded,
             true
         ));
+        schedule->addEvent(std::make_shared<ChangeStateEvent>(
+            o2start,
+            State::Property::OxygenatorOn,
+            true
+        ));
 
         // Finish watering
         schedule->addEvent(std::make_shared<ChangeStateEvent>(
             finish,
             State::Property::ReservoirFlooded,
+            false
+        ));
+        schedule->addEvent(std::make_shared<ChangeStateEvent>(
+            finish,
+            State::Property::OxygenatorOn,
             false
         ));
     }

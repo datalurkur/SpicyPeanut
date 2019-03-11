@@ -1,4 +1,5 @@
 #include "config.h"
+#include "device.h"
 #include "log.h"
 #include "ucinterface.h"
 #include "util.h"
@@ -6,6 +7,7 @@
 #if !_WINDOWS_BUILD
 #include "wiringPi.h"
 #include "wiringPiI2C.h"
+#include "mcp23017.h"
 #include <unistd.h>
 #endif
 
@@ -24,8 +26,61 @@ UCInterface::UCInterface()
 {
 #if !_WINDOWS_BUILD
     wiringPiSetup();
-    pinMode(PIN_LIGHT_RELAY, OUTPUT);
-    pinMode(PIN_RESERVOIR_RELAY, OUTPUT);
+    mcp23017Setup(RELAY_BANK_1_PINBASE, RELAY_BANK_1_CHANNEL);
+    mcp23017Setup(RELAY_BANK_2_PINBASE, RELAY_BANK_2_CHANNEL);
+
+    // Output Devices
+    _binaryDevices[State::Property::LightOn] = std::make_shared<BinaryDevice>(
+        "Lights",
+        LIGHTING_PIN,
+        false,
+        false
+    );
+    _binaryDevices[State::Property::ReservoirFlooded] = std::make_shared<BinaryDevice>(
+        "Flood Pump",
+        FLOOD_PUMP_PIN,
+        FLOOD_PUMP_INVERT,
+        false
+    );
+    _binaryDevices[State::Property::OxygenatorOn] = std::make_shared<BinaryDevice>(
+        "Oxygenator",
+        OXYGENATOR_PIN,
+        OXYGENATOR_INVERT,
+        false
+    );
+    _binaryDevices[State::Property::DrainCycleActive] = std::make_shared<BinaryDevice>(
+        "Drain Pump",
+        DRAIN_PUMP_PIN,
+        DRAIN_PUMP_INVERT,
+        false
+    );
+    _binaryDevices[State::Property::FillCycleActive] = std::make_shared<BinaryDevice>(
+        "Fill Pump",
+        FILL_PUMP_PIN,
+        FILL_PUMP_INVERT,
+        false
+    );
+
+    // Sensors
+    _binaryDevices[State::Property::ReservoirEmpty] = std::make_shared<BinaryDevice>(
+        "Reservoir Empty Sensor",
+        RESERVOIR_EMPTY_SENSOR_PIN,
+        false,
+        true
+    );
+    _binaryDevices[State::Property::ReservoirFull] = std::make_shared<BinaryDevice>(
+        "Reservoir Full Sensor",
+        RESERVOIR_FULL_SENSOR_PIN,
+        false,
+        true
+    );
+    _binaryDevices[State::Property::FillReservoirEmpty] = std::make_shared<BinaryDevice>(
+        "Fill Reservoir Empty Sensor",
+        FILL_RESERVOIR_EMPTY_SENSOR_PIN,
+        false,
+        true
+    );
+
     _nextDHT22Sample = SampleCurrentTime();
 
     _pHProbeFD = wiringPiI2CSetup(PH_PROBE_CHANNEL);
@@ -133,42 +188,11 @@ float UCInterface::getLastHumidity()
     return _lastHumidity;
 }
 
-void UCInterface::setReservoirState(bool flooded)
+std::shared_ptr<BinaryDevice> UCInterface::getBinaryDeviceForProperty(State::Property property)
 {
-#if !_WINDOWS_BUILD
-    digitalWrite(PIN_RESERVOIR_RELAY, flooded ? HIGH : LOW);
-#endif
-}
-
-bool UCInterface::getReservoirState()
-{
-    bool ret = false;
-#if _WINDOWS_BUILD
-    ret = true;
-#else
-    ret = (digitalRead(PIN_RESERVOIR_RELAY) == HIGH);
-#endif
-    LogInfo("Current reservoir state is " << (ret ? "flooded" : "drained"));
-    return ret;
-}
-
-void UCInterface::setLightState(bool on)
-{
-#if !_WINDOWS_BUILD
-    digitalWrite(PIN_LIGHT_RELAY, on ? HIGH : LOW);
-#endif
-}
-
-bool UCInterface::getLightState()
-{
-    bool ret = false;
-#if _WINDOWS_BUILD
-    ret = true;
-#else
-    ret = (digitalRead(PIN_LIGHT_RELAY) == HIGH);
-#endif
-    LogInfo("Current light state is " << (ret ? "on" : "off"));
-    return ret;
+    std::map<State::Property, std::shared_ptr<BinaryDevice>>::iterator itr = _binaryDevices.find(property);
+    if (itr == _binaryDevices.end()) { return nullptr; }
+    return itr->second;
 }
 
 void UCInterface::resetProbes()

@@ -1,6 +1,7 @@
 #include "command.h"
 #include "config.h"
 #include "dbinterface.h"
+#include "device.h"
 #include "globalstate.h"
 #include "log.h"
 #include "ucinterface.h"
@@ -26,19 +27,19 @@ SetPropertyCommand::SetPropertyCommand(State::Property property, bool value): _p
 
 void SetPropertyCommand::execute(std::shared_ptr<GlobalState> state)
 {
-	LogInfo("Setting property " << _property << " to " << _value);
-    switch (_property)
+    std::shared_ptr<BinaryDevice> device = UCInterface::Instance->getBinaryDeviceForProperty(_property);
+    if (device == nullptr)
     {
-    case State::Property::LightOn:
-        UCInterface::Instance->setLightState(_value);
-        break;
-    case State::Property::ReservoirFlooded:
-        UCInterface::Instance->setReservoirState(_value);
-        break;
-    default:
-        LogInfo("Unknown property type");
-        break;
+        LogError("Failed to get device for property " << _property);
+        return;
     }
+    if (device->isInput())
+    {
+        LogWarn("Attempted to set the state of an input device for property " << _property);
+        return;
+    }
+    LogInfo("Setting property " << _property << " to " << _value);
+    device->setState(_value);
 }
 
 void SampleDataCommand::execute(std::shared_ptr<GlobalState> state)

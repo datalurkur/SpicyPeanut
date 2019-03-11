@@ -108,6 +108,7 @@ void Schedule::processEvents(std::shared_ptr<CommandQueue> commandQueue)
             _state.getDelta(newState, updates);
             for (std::pair<State::Property, bool> kvp : updates)
             {
+                if (!_state.isSettable(kvp.first)) { continue; }
                 LogDebug("Queueing setprop command to key " << kvp.first << " to " << kvp.second);
                 commandQueue->queueCommand(std::make_shared<SetPropertyCommand>(kvp.first, kvp.second));
             }

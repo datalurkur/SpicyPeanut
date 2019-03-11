@@ -10,6 +10,12 @@ public:
     {
         LightOn = 0,
         ReservoirFlooded,
+        OxygenatorOn,
+        DrainCycleActive,
+        FillCycleActive,
+        ReservoirEmpty,
+        ReservoirFull,
+        FillReservoirEmpty,
         NumProperties
     };
 
@@ -17,6 +23,7 @@ public:
     State();
 
     void setProperty(Property prop, bool value);
+    bool isSettable(Property prop) const;
 
     State& operator=(State& other);
     bool operator==(const State& other) const;
@@ -26,6 +33,7 @@ public:
 
 private:
     bool _properties[Property::NumProperties];
+    bool _settable[Property::NumProperties];
 };
 
 #endif

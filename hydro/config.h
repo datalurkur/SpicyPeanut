@@ -7,14 +7,35 @@
 #define DHT22_MAX_TIMINGS 85
 
 #if USE_WIRINGPI_PINS == 1
-#define PIN_RESERVOIR_RELAY 0
-#define PIN_LIGHT_RELAY 3
-#define PIN_DHT22 2
+#define PIN_DHT22 1
 #else
-#define PIN_RESERVOIR_RELAY 17
-#define PIN_LIGHT_RELAY 22
-#define PIN_DHT22 27
+#define PIN_DHT22 12
 #endif
+
+#define I2C_CHANNEL 1
+#define RELAY_BANK_1_CHANNEL 0x20
+#define RELAY_BANK_1_PINBASE 100
+#define RELAY_BANK_2_CHANNEL 0x21
+#define RELAY_BANK_2_PINBASE 128
+
+#define FILL_RESERVOIR_EMPTY_SENSOR_PIN -1
+#define RESERVOIR_FULL_SENSOR_PIN       -1
+#define RESERVOIR_EMPTY_SENSOR_PIN      -1
+
+#define FILL_PUMP_PIN            RELAY_BANK_2_PINBASE + 1
+#define FILL_PUMP_INVERT         1
+
+#define FLOOD_PUMP_PIN           RELAY_BANK_2_PINBASE + 2
+#define FLOOD_PUMP_INVERT        1
+
+#define DRAIN_PUMP_PIN           RELAY_BANK_2_PINBASE + 3
+#define DRAIN_PUMP_INVERT        1
+
+#define OXYGENATOR_PIN           RELAY_BANK_2_PINBASE + 4
+#define OXYGENATOR_INVERT        1
+
+#define LIGHTING_PIN             RELAY_BANK_1_PINBASE + 1
+#define LIGHTING_INVERT          0
 
 #define PH_PROBE_CHANNEL 0x63
 #define EC_PROBE_CHANNEL 0x64

@@ -1,3 +1,5 @@
+#include "device.h"
+#include "log.h"
 #include "state.h"
 #include "ucinterface.h"
 
@@ -5,24 +7,26 @@ State::State()
 {
     for (int i = 0; i < NumProperties; ++i)
     {
-        switch ((Property)i)
+        Property prop = (Property)i;
+        std::shared_ptr<BinaryDevice> device = UCInterface::Instance->getBinaryDeviceForProperty(prop);
+        if (device == nullptr)
         {
-        case Property::LightOn:
-            _properties[i] = UCInterface::Instance->getLightState();
-            break;
-        case Property::ReservoirFlooded:
-            _properties[i] = UCInterface::Instance->getReservoirState();
-            break;
-        default:
-            _properties[i] = false;
-            break;
+            LogWarn("No device found matching property " << prop);
+            continue;
         }
+        _properties[i] = device->getState();
+        _settable[i] = !device->isInput();
     }
 }
 
 void State::setProperty(Property prop, bool value)
 {
-    _properties[prop] = value;
+    _properties[(int)prop] = value;
+}
+
+bool State::isSettable(Property prop) const
+{
+    return _settable[(int)prop];
 }
 
 State& State::operator=(State& other)

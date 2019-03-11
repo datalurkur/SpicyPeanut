@@ -2,7 +2,12 @@
 #define _UCINTERFACE_H_
 
 #include <chrono>
+#include <map>
 #include <memory>
+
+#include "state.h"
+
+class BinaryDevice;
 
 class UCInterface
 {
@@ -23,11 +28,7 @@ public:
     float getLastTemperature();
     float getLastHumidity();
 
-    void setReservoirState(bool flooded);
-    bool getReservoirState();
-
-    void setLightState(bool on);
-    bool getLightState();
+    std::shared_ptr<BinaryDevice> getBinaryDeviceForProperty(State::Property property);
 
     void resetProbes();
 
@@ -47,6 +48,7 @@ private:
     bool readI2CResponse(int fd, std::string& response, int expectedLength);
 
 private:
+    std::map<State::Property, std::shared_ptr<BinaryDevice>> _binaryDevices;
     std::chrono::system_clock::time_point _nextDHT22Sample;
     float _lastTemperature;
     float _lastTemperatureCelsius;
