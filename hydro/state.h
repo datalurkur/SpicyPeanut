@@ -20,6 +20,9 @@ public:
     };
 
 public:
+    static std::string GetPropertyName(Property);
+
+public:
     State();
 
     void setProperty(Property prop, bool value);

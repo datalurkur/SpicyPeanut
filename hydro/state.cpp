@@ -62,3 +62,28 @@ void State::getDelta(const State& next, std::map<Property, bool>& delta) const
         }
     }
 }
+
+std::string State::GetPropertyName(State::Property property)
+{
+    switch (property)
+    {
+    case LightOn:
+        return std::string("Light On");
+    case ReservoirFlooded:
+        return std::string("Reservoir Flooded");
+    case OxygenatorOn:
+        return std::string("Oxygenator On");
+    case DrainCycleActive:
+        return std::string("Drain Cycle Active");
+    case FillCycleActive:
+        return std::string("Fill Cycle Active");
+    case ReservoirEmpty:
+        return std::string("Reservoir Empty");
+    case ReservoirFull:
+        return std::string("Reservoir Full");
+    case FillReservoirEmpty:
+        return std::string("Fill Reservoir Empty");
+    default:
+        return std::string("Unknown Property");
+    }
+}

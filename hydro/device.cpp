@@ -9,6 +9,8 @@ BinaryDevice::BinaryDevice(const std::string& name, int pin, bool invert, bool i
     _name(name), _pin(pin), _invert(invert), _input(input)
 {
     pinMode(pin, (input ? INPUT : OUTPUT));
+    // Disable binary output devices by default
+    if (!_input) { setState(false); }
 }
 
 bool BinaryDevice::isInput() const
@@ -18,8 +20,10 @@ bool BinaryDevice::isInput() const
 
 void BinaryDevice::setState(bool enabled)
 {
+    bool targetState = (enabled ^ _invert);
+    LogInfo("Setting " << _name << " on pin " << _pin << " to " << (enabled ? "on" : "off") << " / " << (targetState ? "HIGH" : "LOW"));
 #if !_WINDOWS_BUILD
-    digitalWrite(_pin, (enabled ^ _invert) ? HIGH : LOW);
+    digitalWrite(_pin, targetState ? HIGH : LOW);
 #endif
 }
 
@@ -31,6 +35,6 @@ bool BinaryDevice::getState() const
 #else
     ret = ((digitalRead(_pin) ^ _invert) == HIGH);
 #endif
-    LogInfo("Current light state is " << (ret ? "on" : "off"));
+    LogInfo("Current " << _name << " state is " << (ret ? "on" : "off"));
     return ret;
 }

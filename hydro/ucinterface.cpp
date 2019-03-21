@@ -83,12 +83,19 @@ UCInterface::UCInterface()
 
     _nextDHT22Sample = SampleCurrentTime();
 
+#ifdef ENABLE_PROBES
     _pHProbeFD = wiringPiI2CSetup(PH_PROBE_CHANNEL);
     _ecProbeFD = wiringPiI2CSetup(EC_PROBE_CHANNEL);
 #endif
+#endif
 
+#ifdef ENABLE_PROBES
     _pHProbeReady = isPHProbeCalibrated();
     _ecProbeReady = isECProbeCalibrated();
+#else
+    _pHProbeReady = false;
+    _ecProbeReady = false;
+#endif
 }
 
 UCInterface::~UCInterface()

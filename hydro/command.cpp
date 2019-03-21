@@ -30,7 +30,7 @@ void SetPropertyCommand::execute(std::shared_ptr<GlobalState> state)
     std::shared_ptr<BinaryDevice> device = UCInterface::Instance->getBinaryDeviceForProperty(_property);
     if (device == nullptr)
     {
-        LogError("Failed to get device for property " << _property);
+        LogError("Failed to get device for property " << State::GetPropertyName(_property));
         return;
     }
     if (device->isInput())
@@ -38,7 +38,7 @@ void SetPropertyCommand::execute(std::shared_ptr<GlobalState> state)
         LogWarn("Attempted to set the state of an input device for property " << _property);
         return;
     }
-    LogInfo("Setting property " << _property << " to " << _value);
+    LogInfo("Setting property " << State::GetPropertyName(_property) << " to " << _value);
     device->setState(_value);
 }
 

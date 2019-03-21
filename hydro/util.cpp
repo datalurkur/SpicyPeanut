@@ -45,7 +45,7 @@ void FakeTime::simulate()
         // Tick 30 minutes every second
         std::this_thread::sleep_for(std::chrono::seconds(1));
 
-        _currentTime += 30;
+        _currentTime += 15;
         std::chrono::system_clock::time_point currentTime = getCurrentTime();
         LogInfo("The fake time is now " << Log::GetReadableTime(currentTime));
     }

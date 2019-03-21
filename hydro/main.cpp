@@ -1,5 +1,6 @@
 ﻿#include <memory>
 
+#include "config.h"
 #include "command.h"
 #include "commandqueue.h"
 #include "dbinterface.h"
@@ -84,6 +85,7 @@ int main()
         ));
     }
 
+#if defined(ENABLE_SAMPLING)
     // Temperature / humidity sampling
     int timesToSample = 48;
     for (int i = 0; i < timesToSample; ++i)
@@ -91,6 +93,7 @@ int main()
         int time = 60 * 24 * i / timesToSample;
         schedule->addEvent(std::make_shared<SampleDataEvent>(time));
     }
+#endif
 
     schedule->start(commandQueue);
 
